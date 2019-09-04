@@ -4,3 +4,5 @@
 /.docz
 /node_modules
 .idea
+/example/dist/
+/example/pages/.umi/
