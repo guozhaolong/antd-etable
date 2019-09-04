@@ -12,7 +12,7 @@ https://guozhaolong.github.io/antd-etable/
 ## Usage
 ```
 import React, {useContext, useState} from "react";
-import EditableTable from '../../dist';
+import EditableTable from 'antd-etable';
 import {Button} from 'antd';
 import styles from './index.css';
 
