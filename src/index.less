@@ -1,0 +1,52 @@
+@import '~antd/lib/style/themes/default.less';
+.root {
+  a {
+    color: fade(@black, 65%);
+  }
+  a[disabled] {
+    color: rgba(0, 0, 0, 0.25) !important;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    .title {
+      color: @heading-color;
+      font-weight: 500;
+      font-size: 16px;
+    }
+    .toolbar {
+      display: flex;
+      justify-content: space-around;
+      > div {
+        margin-top: 4px;
+      }
+      > i > svg {
+        margin-top: 6px;
+        margin-right: 16px;
+        cursor: pointer;
+        font-size: 12px;
+      }
+    }
+  }
+  .filter {
+    min-height: 30px;
+    td {
+      border-bottom: 1px solid @border-color-base;
+      &:last-of-type {
+        border-right: 1px solid @border-color-base;
+      }
+    }
+  }
+  .bottomBar {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+.hideSelector {
+  :global(.ant-table-selection-column){
+    display:none;
+  }
+}

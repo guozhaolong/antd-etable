@@ -1,0 +1,53 @@
+{
+  "name": "antd-etable",
+  "version": "0.0.1",
+  "description": "a editable table base on ant design",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "authors": {
+    "name": "guozhaolong",
+    "email": "guozhaolong@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guozhaolong/antd-etable.git"
+  },
+  "scripts": {
+    "dev": "father doc dev",
+    "build": "father build"
+  },
+  "files": [
+    "dist",
+    "assets"
+  ],
+  "dependencies": {
+    "classnames": "^2.2.6",
+    "xlsx": "^0.15.1"
+  },
+  "peerDependencies": {
+    "react": "16.x",
+    "antd": "^3.22.2",
+    "lodash": "^4.17.11",
+    "moment": "^2.24.0"
+  },
+  "devDependencies": {
+    "antd": "^3.22.2",
+    "lodash": "^4.17.11",
+    "father": "^2.16.0",
+    "umi": "^2.8.11"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/guozhaolong/antd-etable/issues"
+  },
+  "homepage": "https://github.com/guozhaolong/antd-etable#readme",
+  "directories": {
+    "example": "example"
+  },
+  "keywords": [
+    "editable",
+    "table",
+    "antd"
+  ],
+  "author": "stevenkwok"
+}
