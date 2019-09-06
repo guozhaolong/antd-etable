@@ -266,7 +266,7 @@ const EditableTable = ({ form,
     selectedRowKeys,
     type: multiSelect ? 'checkbox' : 'radio',
     onChange: (keys, rows) => setSelectedRowKeys(keys),
-    onSelect: (record, selected, rows, e) => selected && onSelectRow(record)
+    onSelect: (record, selected, rows, e) => selected && onSelectRow(rows)
   };
 
   if (!showSelector) {
@@ -475,6 +475,13 @@ const EditableTable = ({ form,
                components={components}
                columns={getColumns()}
                dataSource={dataSource}
+               onRow={record => ({
+                 onClick: event => {
+                   if(!showSelector){
+                     onSelectRow([record])
+                   }
+                 }
+               })}
                {...rest} />
       </div>
     </EditableContext.Provider>

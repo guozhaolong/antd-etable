@@ -61,6 +61,8 @@ export default function() {
         pageSize={10}
         total={100}
         cols={cols}
+        multiSelect={false}
+        showSelector={false}
         onFetch={()=>fetch()}
         onChangedDataUpdate={(d)=>{setChangedData(d)}}
       />
