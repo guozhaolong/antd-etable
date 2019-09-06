@@ -1,6 +1,6 @@
 {
   "name": "antd-etable",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "a editable table base on ant design",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
