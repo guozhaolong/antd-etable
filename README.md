@@ -80,3 +80,32 @@ export default function() {
 
 ```
 ## API
+##### EditableTable
+###### 属性
+| 名称 | 描述 | 类型 | 默认值 |
+|:---|:---|:---:|:---:|
+| data | 初始化数据 | Array | [ ] |
+| changedData | 用于保存增删改的更新数据 | Array | [ ] |
+| cols | 表格列 | Array | [ ] |
+| title | 标题 | String或Component | '' |
+| loading | 读取状态 | Boolean | false |
+| pageSize | 每页记录数 | Number | 10 |
+| total | 记录总数 | Number | 0 |
+| multiSelect | 可多选 | Boolean | false |
+| showSelector | 是否显示选择按钮 | Boolean | false |
+| showAddBtn | 是否显示添加按钮 | Boolean | true |
+| showOpBtn | 是否显示编辑和删除按钮 | Boolean | true |
+| showTopPager | 是否显示顶部分页器 | Boolean | true |
+| showBottomPager | 是否显示底部分页器 | Boolean | false |
+| buttons | 自定义操作按钮组 | Array | 无 |
+
+###### 事件
+| 名称 | 描述 | 参数 | 返回值 |
+|:---|:---|:---:|:---:|
+| canEdit | 每行是否可编辑 | record | Boolean |
+| canRemove | 每行是否可删除 | record | Boolean |
+| onAdd | 新增数据的默认对象 | 无 | Object |
+| onFetch | 初始及翻页读取数据事件 | pager,filter,sorter | 无 |
+| onChangedDataUpdate | 更新数据变化时触发 | arr | 无 |
+| onSelectRow | 每页记录数 | rows | 无 |
+| onDownload | 每页记录数 | filter,sorter | 无 |
