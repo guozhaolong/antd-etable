@@ -1,6 +1,6 @@
-import React, {useContext, useState} from "react";
+import React, {useState} from "react";
 import EditableTable from '../../dist';
-import {Button,message,Checkbox} from 'antd';
+import {Button,Checkbox} from 'antd';
 import styles from './index.css';
 
 const data = [
