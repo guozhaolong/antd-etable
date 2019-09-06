@@ -52,7 +52,7 @@ export default function() {
   };
   return (
     <div className={styles.root}>
-      <div style={{textAlign:'right',marginBottom:16}}><Button type="primary">保存</Button></div>
+      <div style={{textAlign:'right',marginBottom:16}}><Button type="primary" onClick={()=>{console.log(changedData)}}>保存</Button></div>
       <EditableTable
         title=""
         loading={loading}
