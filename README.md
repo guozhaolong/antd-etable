@@ -87,6 +87,7 @@ export default function() {
 | data | 初始化数据 | Array | [ ] |
 | changedData | 用于保存增删改的更新数据 | Array | [ ] |
 | cols | 表格列 | Array | [ ] |
+| rowKey | 唯一标识 | String | 'id' |
 | title | 标题 | String或Component | '' |
 | loading | 读取状态 | Boolean | false |
 | pageSize | 每页记录数 | Number | 10 |

@@ -211,6 +211,7 @@ const EditableCell = ({editor = { type: 'text' }, editing, dataIndex, title, rec
 };
 
 const EditableTable = ({ form,
+                         rowKey = "id",
                          title = "",
                          cols = [],
                          data = [],
@@ -480,7 +481,7 @@ const EditableTable = ({ form,
         </div>
         <Table bordered
                size="middle"
-               rowKey="id"
+               rowKey={rowKey}
                style={{ marginBottom: 24 }}
                rowSelection={rowSelection}
                footer={footer}
