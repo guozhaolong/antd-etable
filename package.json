@@ -26,12 +26,12 @@
   },
   "peerDependencies": {
     "react": "16.x",
-    "antd": "^3.22.2",
+    "antd": "^3.17.0",
     "lodash": "^4.17.11",
     "moment": "^2.24.0"
   },
   "devDependencies": {
-    "antd": "^3.22.2",
+    "antd": "^3.17.0",
     "lodash": "^4.17.11",
     "father": "^2.16.0",
     "umi": "^2.8.11"

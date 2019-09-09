@@ -39,7 +39,7 @@ function updateChangedData(changedData, item){
   const idx = changedData.findIndex(d => item.id === d.id);
   const older = changedData.find(d => item.id === d.id);
   if (item.isDelete) {
-    if (older && !older.isUpdate) {
+    if (older && older.isNew) {
       result = [...changedData.slice(0, idx), ...changedData.slice(idx + 1)];
     } else if (older && older.isDelete && older.isUpdate) {
       result = changedData.map(d => {
@@ -254,20 +254,31 @@ const EditableTable = ({ form,
   const [selectedRowKeys,setSelectedRowKeys] = useState([]);
 
   const handleTableChange = (p, f, s) => {
-    if(p && p.pageSize)
+    let current = pager.currentPage;
+    let size = pager.pageSize;
+    let filters = filter;
+    let sorters = sorter;
+    if(p && p.pageSize) {
+      current = p.currentPage;
+      size = p.pageSize;
       setPager({ currentPage: p.currentPage, pageSize: p.pageSize });
-    if(f)
+    }
+    if(f) {
+      filters = f;
       setFilter(f);
-    if(s)
+    }
+    if(s) {
+      sorters = s;
       setSorter(s);
-    onFetch(pager, filter, sorter);
+    }
+    onFetch({ currentPage: current, pageSize: size }, filters, sorters);
   };
 
   let rowSelection = {
     selectedRowKeys,
     type: multiSelect ? 'checkbox' : 'radio',
     onChange: (keys, rows) => setSelectedRowKeys(keys),
-    onSelect: (record, selected, rows, e) => selected && onSelectRow(rows)
+    onSelect: (record, selected, rows, e) => onSelectRow(rows)
   };
 
   if (!showSelector) {
@@ -443,7 +454,7 @@ const EditableTable = ({ form,
                   total={total}
                   current={pager.currentPage}
                   pageSize={pager.pageSize}
-                  onChange={(current, size) => handleTableChange({ current, pageSize: size })}
+                  onChange={(current, size) => handleTableChange({ currentPage: current, pageSize: size })}
                   style={{ display: 'inline-block', marginRight: 16 }}
                 />
               </>
