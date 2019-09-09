@@ -221,6 +221,7 @@ const EditableTable = ({ form,
                          pageSize = 10,
                          total = 0,
                          multiSelect = false,
+                         showToolbar = true,
                          showAddBtn = true,
                          showOpBtn = true,
                          showSelector = false,
@@ -447,21 +448,25 @@ const EditableTable = ({ form,
                 />
               </>
             )}
-            <Tooltip title={filterVisible ? '收起过滤器' : '展开过滤器'}>
-              <Icon type="filter" theme={filterVisible ? 'outlined' : 'filled'} onClick={()=>setFilterVisible(!filterVisible)} />
-            </Tooltip>
-            <Tooltip title="清除过滤条件">
-              <Icon type="rest"
-                    theme="filled"
-                    style={{ cursor: _.isEmpty(filter) ? 'default' : 'pointer',color:_.isEmpty(filter) ? '#ddd' : '#666' }}
-                    onClick={()=>setFilter({})} />
-            </Tooltip>
-            <Tooltip title="查询">
-              <Icon type="search" onClick={() => handleTableChange()} />
-            </Tooltip>
-            <Tooltip title="下载">
-              <Icon type="download" onClick={() => handleDownload()} />
-            </Tooltip>
+            { showToolbar &&
+              <>
+                <Tooltip title={filterVisible ? '收起过滤器' : '展开过滤器'}>
+                  <Icon type="filter" theme={filterVisible ? 'outlined' : 'filled'} onClick={()=>setFilterVisible(!filterVisible)} />
+                </Tooltip>
+                <Tooltip title="清除过滤条件">
+                  <Icon type="rest"
+                        theme="filled"
+                        style={{ cursor: _.isEmpty(filter) ? 'default' : 'pointer',color:_.isEmpty(filter) ? '#ddd' : '#666' }}
+                        onClick={()=>setFilter({})} />
+                </Tooltip>
+                <Tooltip title="查询">
+                  <Icon type="search" onClick={() => handleTableChange()} />
+                </Tooltip>
+                <Tooltip title="下载">
+                  <Icon type="download" onClick={() => handleDownload()} />
+                </Tooltip>
+              </>
+            }
           </div>
         </div>
         <Table bordered

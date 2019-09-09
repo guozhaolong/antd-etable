@@ -92,6 +92,7 @@ export default function() {
 | pageSize | 每页记录数 | Number | 10 |
 | total | 记录总数 | Number | 0 |
 | multiSelect | 可多选 | Boolean | false |
+| showToolbar | 是否显示顶部工具栏 | Boolean | true |
 | showSelector | 是否显示选择按钮 | Boolean | false |
 | showAddBtn | 是否显示添加按钮 | Boolean | true |
 | showOpBtn | 是否显示编辑和删除按钮 | Boolean | true |
