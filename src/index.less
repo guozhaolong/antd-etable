@@ -44,9 +44,38 @@
     display: flex;
     justify-content: space-between;
   }
-}
-.hideSelector {
-  :global(.ant-table-selection-column){
-    width: 0;
+  :global {
+    .ant-table table {
+      table-layout: fixed;
+    }
+    .ant-table-pagination {
+      margin-top: 24px;
+    }
+    .ant-table-tbody {
+      tr:hover:not(.ant-table-expanded-row) {
+        td {
+          background: #e8f7f2;
+        }
+      }
+    }
+    .ant-table-bordered {
+      .ant-table-tbody {
+        tr {
+          td {
+            border-right: 0;
+            word-break: keep-all;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+          td:last-of-type {
+            border-right: 1px solid #e8e8e8;
+          }
+        }
+      }
+    }
+    .ant-pagination-total-text {
+      margin-right: 0;
+    }
   }
 }

@@ -28,7 +28,6 @@ import 'antd/lib/divider/style';
 import moment from 'moment';
 import _ from 'lodash';
 import XLSX from 'xlsx';
-import classNames from 'classnames';
 import styles from './index.less';
 
 const EditableContext = React.createContext();
@@ -441,7 +440,7 @@ const EditableTable = ({ form,
   };
   return (
     <EditableContext.Provider value={{ form, changedData, filter, filterVisible, setFilter, selectedRowKeys,showSelector }}>
-      <div className={classNames(styles.root,!showSelector ? styles.hideSelector:null)}>
+      <div className={styles.root}>
         <div className={styles.header}>
           <div className={styles.title}>{title}</div>
           <div className={styles.toolbar}>
