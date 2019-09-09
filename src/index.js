@@ -32,23 +32,23 @@ import styles from './index.less';
 const EditableContext = React.createContext();
 const dateFormat = 'YYYY-MM-DD HH:mm:ss';
 
-function updateChangedData(changedData, item){
+function updateChangedData(changedData, item, rowKey = 'id'){
   let result = [];
-  const idx = changedData.findIndex(d => item.id === d.id);
-  const older = changedData.find(d => item.id === d.id);
+  const idx = changedData.findIndex(d => item[rowKey] === d[rowKey]);
+  const older = changedData.find(d => item[rowKey] === d[rowKey]);
   if (item.isDelete) {
     if (older && (older.isNew || !older.isUpdate)) {
       result = [...changedData.slice(0, idx), ...changedData.slice(idx + 1)];
     } else if (older && older.isDelete && older.isUpdate) {
       result = changedData.map(d => {
-        if (item.id === d.id) {
+        if (item[rowKey] === d[rowKey]) {
           return { ...d, isDelete: false };
         }
         return d;
       });
     } else if (older && !older.isDelete) {
       result = changedData.map(d => {
-        if (item.id === d.id) {
+        if (item[rowKey] === d[rowKey]) {
           return { ...d, isDelete: true };
         }
         return d;
@@ -59,7 +59,7 @@ function updateChangedData(changedData, item){
   } else {
     if (idx > -1) {
       result = changedData.map(d => {
-        if (item.id === d.id) {
+        if (item[rowKey] === d[rowKey]) {
           return { ...d, ...item };
         }
         return d;
@@ -146,11 +146,11 @@ const EditableHRow = (props) => {
 };
 
 const EditableRow = (props) => {
-  const { changedData,selectedRowKeys, } = useContext(EditableContext);
-  const id = props['data-row-key'];
-  const isDelete = changedData.find(d => id === d.id && d.isDelete);
+  const { changedData,selectedRowKeys,rowKey } = useContext(EditableContext);
+  const key = props['data-row-key'];
+  const isDelete = changedData.find(d => key === d[rowKey] && d.isDelete);
   let style = isDelete ? { textDecoration: 'line-through', ...props.style } : props.style;
-  const selected = selectedRowKeys.find(i => id === i);
+  const selected = selectedRowKeys.find(i => key === i);
   if (selected) {
     style = {
       ...style,
@@ -188,17 +188,19 @@ const getInput = (editor) => {
 
 const EditableCell = ({editor = { type: 'text' }, editing, dataIndex, title, record, index, children, ...restProps}) => {
   const { form } = useContext(EditableContext);
+  const rules = [];
+  if(editor.required){
+    rules.push({ required: editor.required, message: `${title}必填.` });
+  }
+  if(editor.validator){
+    rules.push(editor.validator);
+  }
   return (
     <td {...restProps}>
       {editing ? (
         <Form.Item style={{ margin: '-12px -4px' }}>
           {form.getFieldDecorator(dataIndex, {
-            rules: [
-              {
-                required: editor.required,
-                message: `${title}必填.`,
-              },
-            ],
+            rules: rules,
             initialValue: editor.type === 'datetime' ? moment(record[dataIndex], dateFormat) : record[dataIndex],
             valuePropName: editor.type === 'checkbox' ? 'checked' : 'value',
           })(getInput(editor))}
@@ -236,7 +238,7 @@ const EditableTable = ({ form,
                          onSelectRow = () => {},
                          ...rest }) => {
   const updateData = data.map(d => {
-    const updater = changedData.find(s => d.id === s.id);
+    const updater = changedData.find(s => d[rowKey] === s[rowKey]);
     if (updater) {
       return { ...d, ...updater };
     }
@@ -292,23 +294,23 @@ const EditableTable = ({ form,
 
   const handleAdd = () => {
     let newObj = onAdd();
-    let id = _.uniqueId('new_');
+    let key = _.uniqueId('new_');
     if(newObj){
       newObj.isNew = true;
-      if(newObj.id)
-        id = newObj.id;
+      if(newObj[rowKey])
+        key = newObj[rowKey];
       else
-        newObj.id = id;
+        newObj[rowKey] = key;
     }else{
-      newObj = { id, isNew: true };
+      newObj = { [rowKey]:key, isNew: true };
     }
-    const result = updateChangedData(changedData,newObj);
+    const result = updateChangedData(changedData,newObj, rowKey);
     onChangedDataUpdate(result);
-    setEditingKey(id);
+    setEditingKey(key);
   };
 
   const handleRemove = item => {
-    const result = updateChangedData(changedData,{ id: item.id, isDelete: true });
+    const result = updateChangedData(changedData,{ [rowKey]: item[rowKey], isDelete: true }, rowKey);
     onChangedDataUpdate(result);
     if (item.isNew)
       setEditingKey('');
@@ -325,7 +327,7 @@ const EditableTable = ({ form,
           updateRow[key] = updateRow[key].format(dateFormat);
         }
       }
-      const result = updateChangedData(changedData,{ id: record.id, ...updateRow, isUpdate: true });
+      const result = updateChangedData(changedData,{ [rowKey]: record[rowKey], ...updateRow, isUpdate: true }, rowKey);
       onChangedDataUpdate(result);
       setEditingKey('');
     });
@@ -348,7 +350,7 @@ const EditableTable = ({ form,
         align: 'center',
         width: 100,
         render: (text, record) => {
-          const editable = record.id === editingKey;
+          const editable = record[rowKey] === editingKey;
           return (
             <>
               {canEdit(record) &&
@@ -362,14 +364,14 @@ const EditableTable = ({ form,
                   </Tooltip>
                 </>
               ) : (
-                <a disabled={editingKey !== ''} onClick={() => setEditingKey(record.id)}>
+                <a disabled={editingKey !== ''} onClick={() => setEditingKey(record[rowKey])}>
                   <Tooltip title="编辑">
                     <Icon type="edit" />
                   </Tooltip>
                 </a>
               ))}
-              {canEdit(record) && canRemove(record) && record.id && <Divider type="vertical" />}
-              {canRemove(record) && (record.id || !canEdit(record)) && (
+              {canEdit(record) && canRemove(record) && record[rowKey] && <Divider type="vertical" />}
+              {canRemove(record) && (record[rowKey] || !canEdit(record)) && (
                 <Tooltip title={record.isDelete ? '取消删除' : '删除'}>
                   <Icon
                     type="delete"
@@ -392,7 +394,7 @@ const EditableTable = ({ form,
         onCell: record => ({
           record,
           editor: col.editor,
-          editing: record.id === editingKey,
+          editing: record[rowKey] === editingKey,
           dataIndex: col.dataIndex,
           title: col.title,
         }),
@@ -439,7 +441,7 @@ const EditableTable = ({ form,
     },
   };
   return (
-    <EditableContext.Provider value={{ form, changedData, filter, filterVisible, setFilter, selectedRowKeys,showSelector }}>
+    <EditableContext.Provider value={{ form, rowKey, changedData, filter, filterVisible, setFilter, selectedRowKeys,showSelector }}>
       <div className={styles.root}>
         <div className={styles.header}>
           <div className={styles.title}>{title}</div>

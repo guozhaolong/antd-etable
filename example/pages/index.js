@@ -11,12 +11,23 @@ const data = [
 const type = ['','类型一','类型二'];
 const cols = [
   {
+    title: 'ID',
+    dataIndex: 'id',
+    editable:false,
+  },
+  {
     title: '名称',
     dataIndex: 'name',
     sorter: true,
     editable:true,
     editor: {
       required: true,
+      validator: (rule,value,callback) => {
+        if(data.find(d => d.name === value))
+          callback('名称已存在!');
+        else
+          callback();
+      },
     },
   },
   {
@@ -77,6 +88,7 @@ export default function() {
         <Button type="primary" onClick={()=>{console.log('onSave',changedData);}}>保存</Button>
       </div>
       <EditableTable
+        rowKey="id"
         title=""
         loading={loading}
         data={data}
