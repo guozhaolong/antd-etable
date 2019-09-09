@@ -441,7 +441,7 @@ const EditableTable = ({ form,
   };
   return (
     <EditableContext.Provider value={{ form, changedData, filter, filterVisible, setFilter, selectedRowKeys,showSelector }}>
-      <div className={classNames(styles.root,null)}>
+      <div className={classNames(styles.root,!showSelector ? styles.hideSelector:null)}>
         <div className={styles.header}>
           <div className={styles.title}>{title}</div>
           <div className={styles.toolbar}>
@@ -493,9 +493,7 @@ const EditableTable = ({ form,
                dataSource={dataSource}
                onRow={record => ({
                  onClick: event => {
-                   if(!showSelector){
-                     onSelectRow([record])
-                   }
+                   onSelectRow([record])
                  }
                })}
                {...rest} />
