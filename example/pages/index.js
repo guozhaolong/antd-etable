@@ -13,6 +13,7 @@ const cols = [
   {
     title: '名称',
     dataIndex: 'name',
+    sorter: true,
     editable:true,
     editor: {
       required: true,
@@ -21,6 +22,7 @@ const cols = [
   {
     title: '类型',
     dataIndex: 'type',
+    sorter: true,
     editable:true,
     editor: {
       type: 'select',

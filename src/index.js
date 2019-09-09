@@ -262,12 +262,12 @@ const EditableTable = ({ form,
       setPager({ currentPage: p.currentPage, pageSize: p.pageSize });
     }
     if(f) {
-      filters = f;
+      filters = {...filter, ...f};
       setFilter(f);
     }
     if(s) {
-      sorters = s;
-      setSorter(s);
+      sorters = {[s.field]:s.order};
+      setSorter(sorters);
     }
     onFetch({ currentPage: current, pageSize: size }, filters, sorters);
   };
@@ -489,6 +489,7 @@ const EditableTable = ({ form,
                components={components}
                columns={getColumns()}
                dataSource={dataSource}
+               onChange={(p,f,s) => handleTableChange(p,f,s)}
                onRow={record => ({
                  onClick: event => {
                    if(event.nativeEvent.target.tagName === 'TD'){
