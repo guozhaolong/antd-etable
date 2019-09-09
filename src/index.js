@@ -19,7 +19,6 @@ import 'antd/lib/input/style';
 import 'antd/lib/pagination/style';
 import 'antd/lib/tooltip/style';
 import 'antd/lib/icon/style';
-import 'antd/lib/button/style';
 import 'antd/lib/select/style';
 import 'antd/lib/input-number/style';
 import 'antd/lib/date-picker/style';
@@ -38,7 +37,7 @@ function updateChangedData(changedData, item){
   const idx = changedData.findIndex(d => item.id === d.id);
   const older = changedData.find(d => item.id === d.id);
   if (item.isDelete) {
-    if (older && older.isNew) {
+    if (older && (older.isNew || !older.isUpdate)) {
       result = [...changedData.slice(0, idx), ...changedData.slice(idx + 1)];
     } else if (older && older.isDelete && older.isUpdate) {
       result = changedData.map(d => {
@@ -492,7 +491,9 @@ const EditableTable = ({ form,
                dataSource={dataSource}
                onRow={record => ({
                  onClick: event => {
-                   onSelectRow([record])
+                   if(event.nativeEvent.target.tagName === 'TD'){
+                     onSelectRow([record])
+                   }
                  }
                })}
                {...rest} />
