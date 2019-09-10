@@ -314,7 +314,7 @@ const EditableTable = ({ form,
   };
 
   const handleRemove = item => {
-    const result = updateChangedData(changedData,{ [rowKey]: item[rowKey], isDelete: true }, rowKey);
+    const result = updateChangedData(changedData,{ ...item, isDelete: true }, rowKey);
     onChangedDataUpdate(result);
     if (item.isNew)
       setEditingKey('');
