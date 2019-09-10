@@ -215,6 +215,7 @@ const EditableCell = ({editor = { type: 'text' }, editing, dataIndex, title, rec
 const EditableTable = ({ form,
                          rowKey = "id",
                          title = "",
+                         newRowKeyPrefix = "new_",
                          cols = [],
                          data = [],
                          changedData = [],
@@ -294,7 +295,7 @@ const EditableTable = ({ form,
 
   const handleAdd = () => {
     let newObj = onAdd();
-    let key = _.uniqueId('new_');
+    let key = _.uniqueId(newRowKeyPrefix);
     if(newObj){
       newObj.isNew = true;
       if(newObj[rowKey])

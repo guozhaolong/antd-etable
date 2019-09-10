@@ -88,6 +88,7 @@ export default function() {
 | [changedData](#changeddata) | 用于保存增删改的更新数据 | Array | [ ] |
 | [cols](#cols) | 表格列 | Array | [ ] |
 | [rowKey](#rowkey) | 唯一标识 | String | 'id' |
+| newRowKeyPrefix | 新增数据唯一标识的前缀 | String | 'new_' |
 | title | 标题 | String或Component | '' |
 | loading | 读取状态 | Boolean | false |
 | pageSize | 每页记录数 | Number | 10 |
