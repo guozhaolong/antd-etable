@@ -28,6 +28,7 @@ import moment from 'moment';
 import _ from 'lodash';
 import XLSX from 'xlsx';
 import styles from './index.less';
+import locale from './locales';
 
 const EditableContext = React.createContext();
 const dateFormat = 'YYYY-MM-DD HH:mm:ss';
@@ -213,6 +214,7 @@ const EditableCell = ({editor = { type: 'text' }, editing, dataIndex, title, rec
 };
 
 const EditableTable = ({ form,
+                         lang = "zh",
                          rowKey = "id",
                          title = "",
                          newRowKeyPrefix = "new_",
@@ -238,6 +240,7 @@ const EditableTable = ({ form,
                          onDownload,
                          onSelectRow = () => {},
                          ...rest }) => {
+  const i18n = locale[lang.toLowerCase()];
   const updateData = data.filter(d => !!d).map(d => {
     const updater = changedData.find(s => d[rowKey] === s[rowKey]);
     if (updater) {
@@ -339,7 +342,7 @@ const EditableTable = ({ form,
       onDownload(filter, sorter);
     } else {
       const header = cols.map(c => {if(c.dataIndex) return c.dataIndex});
-      exportXLS({ name: '测试文档', header, data })
+      exportXLS({ name: 'table', header, data })
     }
   };
 
@@ -347,7 +350,7 @@ const EditableTable = ({ form,
     let columns = cols;
     if (showOpBtn) {
       columns = cols.concat({
-        title: '操作',
+        title: i18n['op'],
         align: 'center',
         width: 100,
         render: (text, record) => {
@@ -357,23 +360,23 @@ const EditableTable = ({ form,
               {canEdit(record) &&
               (editable ? (
                 <>
-                  <Tooltip title="确定">
+                  <Tooltip title={i18n['ok']}>
                     <Icon type="check" onClick={() => handleEditOk(record)} style={{ marginRight: 8 }}/>
                   </Tooltip>
-                  <Tooltip title="取消">
+                  <Tooltip title={i18n['cancel']}>
                     <Icon type="close" onClick={() => setEditingKey('')}/>
                   </Tooltip>
                 </>
               ) : (
                 <a disabled={editingKey !== ''} onClick={() => setEditingKey(record[rowKey])}>
-                  <Tooltip title="编辑">
+                  <Tooltip title={i18n['edit']}>
                     <Icon type="edit" />
                   </Tooltip>
                 </a>
               ))}
               {canEdit(record) && canRemove(record) && record[rowKey] && <Divider type="vertical" />}
               {canRemove(record) && (record[rowKey] || !canEdit(record)) && (
-                <Tooltip title={record.isDelete ? '取消删除' : '删除'}>
+                <Tooltip title={record.isDelete ? i18n['undelete'] : i18n['delete'] }>
                   <Icon
                     type="delete"
                     theme={record.isDelete ? 'filled' : 'outlined'}
@@ -409,7 +412,7 @@ const EditableTable = ({ form,
       <div>
         {showAddBtn && (
           <Button icon="plus" onClick={handleAdd} style={{ marginRight: 8 }}>
-            添加数据
+            {i18n['add']}
           </Button>
         )}
         {buttons}
@@ -421,7 +424,7 @@ const EditableTable = ({ form,
         position="bottom"
         size="small"
         pageSizeOptions={['5', '10', '20', '30', '40']}
-        showTotal={(t, range) => { return `共${t}条结果`}}
+        showTotal={(t, range) => { return `${i18n['total.prefix']} ${t} ${i18n['total.suffix']}`}}
         onChange={(current, size) => handleTableChange({ currentPage: current, pageSize: size })}
         onShowSizeChange={(current, size) => handleTableChange({ currentPage: current, pageSize: size })}
         current={pager.currentPage}
@@ -449,7 +452,7 @@ const EditableTable = ({ form,
           <div className={styles.toolbar}>
             {showTopPager && (
               <>
-                <div>{`共${total}条`}</div>
+                <div>{`${i18n['total.prefix']} ${total} ${i18n['total.suffix']}`}</div>
                 <Pagination
                   simple
                   defaultCurrent={1}
@@ -463,19 +466,19 @@ const EditableTable = ({ form,
             )}
             { showToolbar &&
               <>
-                <Tooltip title={filterVisible ? '收起过滤器' : '展开过滤器'}>
+                <Tooltip title={filterVisible ? i18n['filter.collapse'] : i18n['filter.expand']}>
                   <Icon type="filter" theme={filterVisible ? 'outlined' : 'filled'} onClick={()=>setFilterVisible(!filterVisible)} />
                 </Tooltip>
-                <Tooltip title="清除过滤条件">
+                <Tooltip title={i18n['filter.clear']}>
                   <Icon type="rest"
                         theme="filled"
                         style={{ cursor: _.isEmpty(filter) ? 'default' : 'pointer',color:_.isEmpty(filter) ? '#ddd' : '#666' }}
                         onClick={()=>setFilter({})} />
                 </Tooltip>
-                <Tooltip title="查询">
+                <Tooltip title={i18n['search']}>
                   <Icon type="search" onClick={() => handleTableChange()} />
                 </Tooltip>
-                <Tooltip title="下载">
+                <Tooltip title={i18n['download']}>
                   <Icon type="download" onClick={() => handleDownload()} />
                 </Tooltip>
               </>
