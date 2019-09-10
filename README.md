@@ -112,6 +112,7 @@ export default function() {
 | [onSelectRow](#onselectrow) | 每页记录数 | rows | 无 |
 | [onDownload](#ondownload) | 每页记录数 | filter,sorter | 无 |
 
+---
 ##### changedData
 ###### 数组，用于保存变更后的数据，每条数据中会使用isNew、isUpdate、isDelete来标识该数据是新增、更新还是删除
 
