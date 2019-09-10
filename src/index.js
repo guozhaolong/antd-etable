@@ -238,7 +238,7 @@ const EditableTable = ({ form,
                          onDownload,
                          onSelectRow = () => {},
                          ...rest }) => {
-  const updateData = data.map(d => {
+  const updateData = data.filter(d => !!d).map(d => {
     const updater = changedData.find(s => d[rowKey] === s[rowKey]);
     if (updater) {
       return { ...d, ...updater };
