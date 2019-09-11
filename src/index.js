@@ -168,7 +168,7 @@ const getInput = (editor) => {
       return <InputNumber />;
     case 'select':
       return (
-        <Select style={{ minWidth: 60 }}>
+        <Select style={{ width: '100%' }}>
           {options.map(o => (
             <Select.Option key={o.key} value={o.key}>
               {o.value}
