@@ -354,21 +354,21 @@ const EditableTable = ({ form,
         align: 'center',
         width: 100,
         render: (text, record) => {
-          const editable = record[rowKey] === editingKey;
+          const editing = record[rowKey] === editingKey;
           return (
             <>
               {canEdit(record) &&
-              (editable ? (
+              (editing ? (
                 <>
                   <Tooltip title={i18n['ok']}>
-                    <Icon type="check" onClick={() => handleEditOk(record)} style={{ marginRight: 8 }}/>
+                    <Icon type="check" onClick={(e) => {handleEditOk(record);e.stopPropagation();}} style={{ marginRight: 8 }}/>
                   </Tooltip>
                   <Tooltip title={i18n['cancel']}>
-                    <Icon type="close" onClick={() => setEditingKey('')}/>
+                    <Icon type="close" onClick={(e) => {setEditingKey('');e.stopPropagation();}}/>
                   </Tooltip>
                 </>
               ) : (
-                <a disabled={editingKey !== ''} onClick={() => setEditingKey(record[rowKey])}>
+                <a disabled={editingKey !== ''} onClick={(e) => {setEditingKey(record[rowKey]);e.stopPropagation();}}>
                   <Tooltip title={i18n['edit']}>
                     <Icon type="edit" />
                   </Tooltip>
@@ -381,7 +381,7 @@ const EditableTable = ({ form,
                     type="delete"
                     theme={record.isDelete ? 'filled' : 'outlined'}
                     style={{ cursor: 'pointer' }}
-                    onClick={() => handleRemove(record)} />
+                    onClick={(e) => {handleRemove(record);e.stopPropagation();}}/>
                 </Tooltip>
               )}
             </>
@@ -499,7 +499,7 @@ const EditableTable = ({ form,
                onChange={(p,f,s) => handleTableChange(p,f,s)}
                onRow={record => ({
                  onClick: event => {
-                   if(event.nativeEvent.target.tagName === 'TD'){
+                   if(record[rowKey] !== editingKey){
                      onSelectRow([record])
                    }
                  }
