@@ -283,7 +283,8 @@ const EditableTable = ({ form,
     selectedRowKeys,
     type: multiSelect ? 'checkbox' : 'radio',
     onChange: (keys, rows) => setSelectedRowKeys(keys),
-    onSelect: (record, selected, rows, e) => onSelectRow(rows)
+    onSelect: (record, selected, rows, e) => onSelectRow(rows),
+    onSelectAll: (selected, rows, changeRows) => onSelectRow(rows),
   };
 
   if (!showSelector) {
