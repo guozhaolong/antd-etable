@@ -268,14 +268,16 @@ const EditableTable = ({ form,
       size = p.pageSize;
       setPager({ currentPage: p.currentPage, pageSize: p.pageSize });
     }
-    if(f) {
+    if(!_.isEmpty(f)) {
       filters = {...filter, ...f};
       setFilter(f);
     }
-    if(s) {
+    if(!_.isEmpty(s)) {
       sorters = {[s.field]:s.order};
       setSorter(sorters);
     }
+    filters = _.pickBy(filters, value => !_.isUndefined(value) && value.trim() !== "");
+    sorters = _.pickBy(sorters, value => !_.isUndefined(value) && value.trim() !== "");
     onFetch({ currentPage: current, pageSize: size }, filters, sorters);
   };
 
