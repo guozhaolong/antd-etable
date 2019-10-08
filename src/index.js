@@ -502,7 +502,7 @@ const EditableTable = ({ form,
                onChange={(p,f,s) => handleTableChange(p,f,s)}
                onRow={record => ({
                  onClick: event => {
-                   if(record[rowKey] !== editingKey){
+                   if(!showSelector && record[rowKey] !== editingKey){
                      onSelectRow([record])
                    }
                  }
