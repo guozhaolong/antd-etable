@@ -90,6 +90,7 @@ export default function() {
       <EditableTable
         rowKey="id"
         title=""
+        scroll={{x:1300}}
         loading={loading}
         data={data}
         changedData={changedData}

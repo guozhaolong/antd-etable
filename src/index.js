@@ -355,6 +355,7 @@ const EditableTable = ({ form,
       columns = cols.concat({
         title: i18n['op'],
         align: 'center',
+        fixed: 'right',
         width: 100,
         render: (text, record) => {
           const editing = record[rowKey] === editingKey;
