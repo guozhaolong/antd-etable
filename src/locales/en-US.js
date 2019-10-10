@@ -12,5 +12,6 @@ export default {
   'cancel': 'Cancel',
   'op': 'Operation',
   'search': 'Search',
+  'columns': 'Columns',
   'download': 'Download',
 };

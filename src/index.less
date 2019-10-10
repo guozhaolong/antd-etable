@@ -51,6 +51,17 @@
     .ant-table-pagination {
       margin-top: 24px;
     }
+    .ant-table-thead {
+      .react-resizable-handle {
+        position: absolute;
+        width: 10px;
+        height: 100%;
+        bottom: 0;
+        right: -5px;
+        cursor: col-resize;
+        z-index: 1;
+      }
+    }
     .ant-table-tbody {
       tr:hover:not(.ant-table-expanded-row) {
         td {

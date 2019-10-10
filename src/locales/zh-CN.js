@@ -12,5 +12,6 @@ export default {
   'cancel': '取消',
   'op': '操作',
   'search': '查询',
+  'columns': '显示列',
   'download': '下载',
 };

@@ -1,4 +1,4 @@
-import React, {useContext, useState} from "react";
+import React, {useContext, useState, useEffect} from "react";
 import {
   Form,
   Table,
@@ -12,6 +12,8 @@ import {
   DatePicker,
   Checkbox,
   Divider,
+  Popover,
+  List,
 } from 'antd';
 import 'antd/lib/form/style';
 import 'antd/lib/table/style';
@@ -24,9 +26,11 @@ import 'antd/lib/input-number/style';
 import 'antd/lib/date-picker/style';
 import 'antd/lib/checkbox/style';
 import 'antd/lib/divider/style';
+import 'antd/lib/popover/style';
+import 'antd/lib/list/style';
 import moment from 'moment';
+import { Resizable } from 'react-resizable';
 import _ from 'lodash';
-import XLSX from 'xlsx';
 import styles from './index.less';
 import locale from './locales';
 
@@ -71,56 +75,26 @@ function updateChangedData(changedData, item, rowKey = 'id'){
   }
   return result;
 }
-function s2ab(s) {
-  const buf = new ArrayBuffer(s.length);
-  const view = new Uint8Array(buf);
-  for (let i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xff;
-  return buf;
-}
-function exportXLS(payload){
+function exportCSV(payload){
   if (payload && payload.data.length > 0) {
-    const sheetnames = [];
-    const sheets = {};
-    const sheetName = payload.name;
-    const _headers = payload.header;
-    const _data = payload.data;
-    if (_data.length > 0) {
-      const headers = _headers
-        .map((v, i) => Object.assign({},{v,position: String.fromCharCode(65 + i) + 1} ))
-        .reduce((prev, next) => Object.assign({}, prev, { [next.position]: { v: next.v } }), {});
-      const data = _data
-        .map((v, i) => _headers.map((k, j) =>
-          Object.assign( {},{ v: v[k], position: String.fromCharCode(65 + j) + (i + 2) }))
-        )
-        .reduce((prev, next) => prev.concat(next))
-        .reduce((prev, next) => Object.assign({}, prev, { [next.position]: { v: next.v } }),{} );
-      const output = Object.assign({}, headers, data);
-      const outputPos = Object.keys(output);
-      const ref = `${outputPos[0]}:${outputPos[outputPos.length - 1]}`;
-      sheetnames.push(sheetName);
-      sheets[sheetName] = Object.assign({}, output, { '!ref': ref });
-    }
-    if (sheetnames.length > 0) {
-      const wb = { SheetNames: sheetnames, Sheets: sheets };
-      const wopts = { bookType: 'xlsx', bookSST: false, type: 'binary' };
-      const wbout = XLSX.write(wb, wopts);
-      const blob = new Blob([s2ab(wbout)], { type: 'application/x-xls;charset=utf-8;' });
-      const filename = `${payload.name}.xlsx`;
-      let link = document.createElement('a');
-      if (link.download !== undefined) {
-        var url = URL.createObjectURL(blob);
-        link.setAttribute('href', url);
-        link.setAttribute('download', filename);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
+    let str = payload.header.map(h => h.title).join(',')+"\n";
+    str += payload.data.map(d => payload.header.map(h => d[h.dataIndex]).join(',')).join("\n");
+    const blob = new Blob(["\ufeff"+str], { type: 'text/csv;charset=utf-8;' });
+    const filename = `${payload.name}.csv`;
+    let link = document.createElement('a');
+    if (link.download !== undefined) {
+      var url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', filename);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
   }
 }
 
-const EditableHRow = (props) => {
+const EditableHRow = props => {
   const { filter,filterVisible,setFilter,showSelector } = useContext(EditableContext);
   return (
     <>
@@ -129,15 +103,15 @@ const EditableHRow = (props) => {
         <tr className={styles.filter}>
           { props.children.map(td => {
             if(td.key === "selection-column"){
-              return <td key={`filter${td.key}`} />;
+              return <th key={`filter${td.key}`} />;
             } else if (_.isNaN(parseInt(td.key, 10))) {
               return (
-                <td key={`filter${td.key}`} style={{ padding: 5 }}>
+                <th key={`filter${td.key}`} style={{ padding: 5 }}>
                   <Input value={filter[td.key]} onChange={e => { setFilter({...filter,[td.key]: e.target.value}) }} />
-                </td>
+                </th>
               );
             } else {
-              return <td key={`filter${td.key}`} />;
+              return <th key={`filter${td.key}`} />;
             }
           })}
         </tr>
@@ -146,7 +120,32 @@ const EditableHRow = (props) => {
   )
 };
 
-const EditableRow = (props) => {
+const ResizeableCell = props => {
+  const { columns,setColumns } = useContext(EditableContext);
+  const { index, width, ...restProps } = props;
+  if (!width) {
+    return <th {...restProps} />;
+  }
+  return (
+    <Resizable
+      width={width}
+      height={0}
+      onResize={(e, { size }) => {
+        const nextColumns = [...columns];
+        nextColumns[index] = {
+          ...nextColumns[index],
+          width: size.width,
+        };
+        setColumns(nextColumns);
+      }}
+      draggableOpts={{ enableUserSelectHack: false }}
+    >
+      <th {...restProps} />
+    </Resizable>
+  );
+};
+
+const EditableRow = props => {
   const { changedData,selectedRowKeys,rowKey } = useContext(EditableContext);
   const key = props['data-row-key'];
   const isDelete = changedData.find(d => key === d[rowKey] && d.isDelete);
@@ -161,7 +160,7 @@ const EditableRow = (props) => {
   return <tr {...props} style={style} />;
 };
 
-const getInput = (editor) => {
+const getInput = editor => {
   const { type = 'text', options = [] } = editor;
   switch (type) {
     case 'number':
@@ -194,7 +193,7 @@ const EditableCell = ({editor = { type: 'text' }, editing, dataIndex, title, rec
     rules.push({ required: editor.required, message: `${title}必填.` });
   }
   if(editor.validator){
-    rules.push(editor.validator);
+    rules.push({validator: (rule,value,callback) => editor.validator(rule,value,callback,record)});
   }
   return (
     <td {...restProps}>
@@ -219,11 +218,13 @@ const EditableTable = ({ form,
                          title = "",
                          newRowKeyPrefix = "new_",
                          cols = [],
+                         allCols = [],
                          data = [],
                          changedData = [],
                          loading = false,
                          pageSize = 10,
                          total = 0,
+                         scroll = {x : null},
                          multiSelect = false,
                          showToolbar = true,
                          showAddBtn = true,
@@ -257,6 +258,9 @@ const EditableTable = ({ form,
   const [sorter,setSorter] = useState({});
   const [pager,setPager] = useState({currentPage:1, pageSize});
   const [selectedRowKeys,setSelectedRowKeys] = useState([]);
+  const [columnSeq,setColumnSeq] = useState(cols.map((c,idx) => ({...c,idx,visible:true})));
+  const [columns,setColumns] = useState([]);
+  const [columnsPopVisible,setColumnsPopVisible] = useState(false);
 
   const handleTableChange = (p, f, s) => {
     let current = pager.currentPage;
@@ -344,18 +348,22 @@ const EditableTable = ({ form,
     if(onDownload) {
       onDownload(filter, sorter);
     } else {
-      const header = cols.map(c => {if(c.dataIndex) return c.dataIndex});
-      exportXLS({ name: 'table', header, data })
+      const header = columnSeq.map(c => {if(c.dataIndex && c.visible) return {dataIndex: c.dataIndex,title: c.title}});
+      exportCSV({ name: 'table', header, data })
     }
   };
 
   const getColumns = () => {
-    let columns = cols;
+    let cols1 = columnSeq.map(c => {
+      if(c.visible){
+        return c;
+      }
+    }).filter(c => c !== undefined);
     if (showOpBtn) {
-      columns = cols.concat({
+      cols1 = cols1.concat({
         title: i18n['op'],
         align: 'center',
-        fixed: 'right',
+        fixed: scroll && scroll.x ? 'right' : null,
         width: 100,
         render: (text, record) => {
           const editing = record[rowKey] === editingKey;
@@ -393,7 +401,7 @@ const EditableTable = ({ form,
         },
       });
     }
-    return columns.map(col => {
+    return cols1.map((col,idx) => {
       if (!col.editable) {
         return col;
       }
@@ -406,9 +414,17 @@ const EditableTable = ({ form,
           dataIndex: col.dataIndex,
           title: col.title,
         }),
+        onHeaderCell: col => ({
+          width: col.width,
+          index: idx,
+        }),
       };
     });
   };
+
+  useEffect(()=>{
+    setColumns(getColumns());
+  },[cols,editingKey,changedData,columnSeq]);
 
   const footer = () => (
     <div className={styles.bottomBar}>
@@ -442,14 +458,56 @@ const EditableTable = ({ form,
   const components = {
     header: {
       row: EditableHRow,
+      cell: ResizeableCell,
     },
     body: {
       row: EditableRow,
       cell: EditableCell,
     },
   };
+  const columnsFilter = <List
+    bordered={true}
+    size="small"
+    dataSource={allCols}
+    renderItem={(item,idx) => (
+      <List.Item>
+        <Checkbox checked={columnSeq.find(c => c.dataIndex === item.dataIndex && c.visible)?true:false}
+                  onChange={(e)=>{
+                    if(e.target.checked){
+                      let flag = true;
+                      setColumnSeq(columnSeq.map(c => {
+                        if(c.dataIndex === item.dataIndex){
+                          flag = false;
+                          c.visible = true;
+                        }
+                        return c;
+                      }));
+                      if(flag){ // Make sure to insert it in the current position
+                        let insertIdx = 0;
+                        const tempCols = columnSeq.map(c => {
+                          if(c.idx < idx) {
+                            insertIdx = c.idx;
+                          } else {
+                            c.idx++;
+                          }
+                          return c;
+                        });
+                        setColumnSeq([...tempCols.slice(0,insertIdx+1),{...item,idx,visible:true},...tempCols.slice(insertIdx+1)])
+                      }
+                    } else {
+                      setColumnSeq(columnSeq.map(c => {
+                        if(c.dataIndex === item.dataIndex){
+                          c.visible = false;
+                        }
+                        return c;
+                      }));
+                    }
+                  }}>{item.title}</Checkbox>
+      </List.Item>
+    )}
+  />;
   return (
-    <EditableContext.Provider value={{ form, rowKey, changedData, filter, filterVisible, setFilter, selectedRowKeys,showSelector }}>
+    <EditableContext.Provider value={{ form, rowKey, changedData, filter, filterVisible, setFilter, selectedRowKeys,showSelector,columns,setColumns }}>
       <div className={styles.root}>
         <div className={styles.header}>
           <div className={styles.title}>{title}</div>
@@ -471,16 +529,32 @@ const EditableTable = ({ form,
             { showToolbar &&
               <>
                 <Tooltip title={filterVisible ? i18n['filter.collapse'] : i18n['filter.expand']}>
-                  <Icon type="filter" theme={filterVisible ? 'outlined' : 'filled'} onClick={()=>setFilterVisible(!filterVisible)} />
+                  <Icon type="filter" theme={filterVisible ? 'filled':'outlined'} onClick={()=>setFilterVisible(!filterVisible)} />
                 </Tooltip>
                 <Tooltip title={i18n['filter.clear']}>
                   <Icon type="rest"
                         theme="filled"
                         style={{ cursor: _.isEmpty(filter) ? 'default' : 'pointer',color:_.isEmpty(filter) ? '#ddd' : '#666' }}
-                        onClick={()=>setFilter({})} />
+                        onClick={()=>{
+                          if(!_.isEmpty(filter)) {
+                            setFilter({});
+                            handleTableChange();
+                          }
+                        }} />
                 </Tooltip>
                 <Tooltip title={i18n['search']}>
                   <Icon type="search" onClick={() => handleTableChange()} />
+                </Tooltip>
+                <Tooltip title={i18n['columns']}>
+                  <Popover
+                    placement="bottom"
+                    content={columnsFilter}
+                    trigger="click"
+                    visible={columnsPopVisible}
+                    onVisibleChange={(visible) => setColumnsPopVisible(visible)}
+                  >
+                    <Icon type="unordered-list" />
+                  </Popover>
                 </Tooltip>
                 <Tooltip title={i18n['download']}>
                   <Icon type="download" onClick={() => handleDownload()} />
@@ -498,7 +572,7 @@ const EditableTable = ({ form,
                pagination={false}
                loading={loading}
                components={components}
-               columns={getColumns()}
+               columns={columns}
                dataSource={dataSource}
                onChange={(p,f,s) => handleTableChange(p,f,s)}
                onRow={record => ({
@@ -508,6 +582,7 @@ const EditableTable = ({ form,
                    }
                  }
                })}
+               scroll={scroll}
                {...rest} />
       </div>
     </EditableContext.Provider>

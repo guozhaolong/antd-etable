@@ -17,11 +17,12 @@ import {Button} from 'antd';
 import styles from './index.css';
 
 const data = [
-  {id:1,name:'测试1',type:1,created_time:'2019-5-2'},
-  {id:2,name:'测试2',type:2,created_time:'2019-5-3'},
-  {id:3,name:'测试3',type:1,created_time:'2019-5-4'}
+  {id:1,name:'测试1',title:'哈哈',status:0,desc:'描述1描述1描述1描述1',type:0,created_time:'2019-5-2'},
+  {id:2,name:'测试2',title:'呵呵',status:1,desc:'描述2描述2描述2描述2',type:1,created_time:'2019-5-3'},
+  {id:3,name:'测试3',title:'嘻嘻',status:2,desc:'描述3描述3描述3描述3',type:0,created_time:'2019-5-4'}
 ];
-const type = ['','类型一','类型二'];
+const type = ['类型一','类型二'];
+const status = ['正常','异常','停止'];
 const cols = [
   {
     title: '名称',
@@ -55,6 +56,29 @@ const cols = [
     }
   },
 ];
+const allCols = [
+  ...cols.slice(0,2),
+  {
+    title: '标题',
+    dataIndex: 'title',
+    editable:true,
+    width: 120,
+  },
+  ...cols.slice(2),
+  {
+    title: '状态',
+    dataIndex: 'status',
+    editable:true,
+    width: 120,
+    editor: {
+      type: 'select',
+      options: status.map((value,key) => ({key,value}))
+    },
+    render: (text, record) => (
+      status[text]
+    ),
+  }
+];
 export default function() {
   const [changedData,setChangedData] = useState([]);
   const fetch = (pager,filter,sorter) => {
@@ -71,6 +95,7 @@ export default function() {
         pageSize={10}
         total={100}
         cols={cols}
+        allCols={allCols}
         onFetch={()=>fetch()}
         onChangedDataUpdate={(d)=>{setChangedData(d)}}
       />
@@ -87,6 +112,7 @@ export default function() {
 | data | 初始化数据 | Array | [ ] |
 | [changedData](#changeddata) | 用于保存增删改的更新数据 | Array | [ ] |
 | [cols](#cols) | 表格列 | Array | [ ] |
+| allCols | 可显示表格列（格式同cols属性） | Array | [ ] |
 | [rowKey](#rowkey) | 唯一标识 | String | 'id' |
 | newRowKeyPrefix | 新增数据唯一标识的前缀 | String | 'new_' |
 | title | 标题 | String或Component | '' |
