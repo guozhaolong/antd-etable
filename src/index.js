@@ -421,10 +421,12 @@ const EditableTable = ({ form,
       };
     });
   };
-
+  useEffect(()=>{
+    setColumnSeq(cols.map((c,idx) => ({...c,idx,visible:true})));
+  },[cols]);
   useEffect(()=>{
     setColumns(getColumns());
-  },[cols,editingKey,changedData,columnSeq]);
+  },[editingKey,changedData,columnSeq]);
 
   const footer = () => (
     <div className={styles.bottomBar}>
