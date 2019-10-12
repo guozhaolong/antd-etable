@@ -241,15 +241,17 @@ const EditableCell = ({editor = { type: 'text' }, editing, dataIndex, title, rec
   );
 };
 
+const defaultArr = [];
+
 const EditableTable = ({ form,
                          lang = "zh",
                          rowKey = "id",
                          title = "",
                          newRowKeyPrefix = "new_",
-                         cols = [],
+                         cols = defaultArr,
                          allCols = [],
                          data = [],
-                         changedData = [],
+                         changedData = defaultArr,
                          loading = false,
                          pageSize = 10,
                          total = 0,
