@@ -107,9 +107,9 @@ const EditableHRow = props => {
               return <th key={`filter${td.key}`} />;
             } else if (_.isNaN(parseInt(td.key, 10))) {
               const col = columns.find(c => td.key === c.dataIndex);
-              const { editor = {} } = col;
+              const { editor = {}, align = 'left' } = col;
               return (
-                <th key={`filter${td.key}`} style={{ padding: 5 }}>
+                <th key={`filter${td.key}`} style={{ padding: 5,textAlign: align }}>
                   {getFilterInput(editor,filter[td.key],value => { setFilter({...filter,[td.key]: value})})}
                 </th>
               );
