@@ -34,6 +34,7 @@ import _ from 'lodash';
 import styles from './index.less';
 import locale from './locales';
 
+const { RangePicker } = DatePicker;
 const EditableContext = React.createContext();
 const dateFormat = 'YYYY-MM-DD HH:mm:ss';
 
@@ -95,7 +96,7 @@ function exportCSV(payload){
 }
 
 const EditableHRow = props => {
-  const { filter,filterVisible,setFilter,showSelector } = useContext(EditableContext);
+  const { filter,filterVisible,setFilter,columns } = useContext(EditableContext);
   return (
     <>
       <tr {...props} />
@@ -105,15 +106,17 @@ const EditableHRow = props => {
             if(td.key === "selection-column"){
               return <th key={`filter${td.key}`} />;
             } else if (_.isNaN(parseInt(td.key, 10))) {
+              const col = columns.find(c => td.key === c.dataIndex);
+              const { editor = {} } = col;
               return (
                 <th key={`filter${td.key}`} style={{ padding: 5 }}>
-                  <Input value={filter[td.key]} onChange={e => { setFilter({...filter,[td.key]: e.target.value}) }} />
+                  {getFilterInput(editor,filter[td.key],value => { setFilter({...filter,[td.key]: value})})}
                 </th>
               );
             } else {
-              return <th key={`filter${td.key}`} />;
+              return undefined;
             }
-          })}
+          }).filter(a => a !== undefined)}
         </tr>
       )}
     </>
@@ -160,7 +163,33 @@ const EditableRow = props => {
   return <tr {...props} style={style} />;
 };
 
-const getInput = editor => {
+const getFilterInput = (editor,value,onChange) => {
+  const { type = 'text', options = [] } = editor;
+  switch (type) {
+    case 'number':
+      return <InputNumber value={value} onChange={(value)=>onChange(value)}/>;
+    case 'select':
+      return (
+        <Select style={{ width: '100%' }} value={value} onChange={(value)=>onChange(value)}>
+          {options.map(o => (
+            <Select.Option key={o.key} value={o.key}>
+              {o.value}
+            </Select.Option>
+          ))}
+        </Select>
+      );
+    case 'datetime':
+      return <RangePicker style={{width:'100%'}} showTime format={dateFormat} value={value} onChange={(dates)=>onChange(dates)}/>;
+    case 'checkbox':
+      return <Checkbox checked={value} onChange={(e)=>onChange(e.target.checked)}/>;
+    case 'text':
+      return <Input onChange={(e)=>onChange(e.target.value.trim())}/>;
+    default:
+      return <Input onChange={(e)=>onChange(e.target.value.trim())}/>;
+  }
+};
+
+const getInput = (editor) => {
   const { type = 'text', options = [] } = editor;
   switch (type) {
     case 'number':
@@ -280,8 +309,8 @@ const EditableTable = ({ form,
       sorters = {[s.field]:s.order};
       setSorter(sorters);
     }
-    filters = _.pickBy(filters, value => !_.isUndefined(value) && value.trim() !== "");
-    sorters = _.pickBy(sorters, value => !_.isUndefined(value) && value.trim() !== "");
+    filters = _.pickBy(filters, value => !_.isUndefined(value) && value !== "");
+    sorters = _.pickBy(sorters, value => !_.isUndefined(value) && value !== "");
     onFetch({ currentPage: current, pageSize: size }, filters, sorters);
   };
 

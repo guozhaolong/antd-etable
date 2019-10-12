@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import EditableTable from '../../dist';
-import {Button,Checkbox} from 'antd';
+import { Button, Checkbox, Tooltip } from 'antd';
 import styles from './index.css';
 
 const data = [
@@ -37,7 +37,10 @@ const cols = [
     title: '描述',
     dataIndex: 'desc',
     editable:true,
-    width: 300,
+    width: 200,
+    render: (text) => {
+      return <Tooltip title={text}>{text}</Tooltip>
+    }
   },
   {
     title: '类型',
