@@ -101,7 +101,7 @@ const EditableHRow = props => {
     <>
       <tr {...props} />
       {filterVisible && (
-        <tr className={styles.filter}>
+        <tr className={styles.antETableFilter}>
           { props.children.map(td => {
             if(td.key === "selection-column"){
               return <th key={`filter${td.key}`} />;
@@ -460,7 +460,7 @@ const EditableTable = ({ form,
   },[editingKey,changedData,columnSeq]);
 
   const footer = () => (
-    <div className={styles.bottomBar}>
+    <div className={styles.antETableBottomBar}>
       {!showBottomPager && <div />}
       <div>
         {showAddBtn && (
@@ -542,9 +542,9 @@ const EditableTable = ({ form,
   return (
     <EditableContext.Provider value={{ form, rowKey, changedData, filter, filterVisible, setFilter, selectedRowKeys,showSelector,columns,setColumns }}>
       <div className={styles.antETable}>
-        <div className={styles.header}>
-          <div className={styles.title}>{title}</div>
-          <div className={styles.toolbar}>
+        <div className={styles.antETableHeader}>
+          <div className={styles.antETableTitle}>{title}</div>
+          <div className={styles.antETableToolbar}>
             {showTopPager && (
               <>
                 <div>{`${i18n['total.prefix']} ${total} ${i18n['total.suffix']}`}</div>
