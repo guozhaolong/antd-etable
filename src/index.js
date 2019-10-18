@@ -541,7 +541,7 @@ const EditableTable = ({ form,
   />;
   return (
     <EditableContext.Provider value={{ form, rowKey, changedData, filter, filterVisible, setFilter, selectedRowKeys,showSelector,columns,setColumns }}>
-      <div className={styles.root}>
+      <div className={styles.antETable}>
         <div className={styles.header}>
           <div className={styles.title}>{title}</div>
           <div className={styles.toolbar}>
