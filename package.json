@@ -1,6 +1,6 @@
 {
   "name": "antd-etable",
-  "version": "1.1.11",
+  "version": "1.1.12",
   "description": "a editable table base on ant design",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
@@ -13,7 +13,7 @@
     "url": "git+https://github.com/guozhaolong/antd-etable.git"
   },
   "scripts": {
-    "dev": "father doc dev",
+    "dev": "cd example && umi dev",
     "build": "father build"
   },
   "files": [

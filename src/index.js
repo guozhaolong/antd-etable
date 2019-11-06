@@ -247,6 +247,7 @@ const EditableTable = ({ form,
                          lang = "zh",
                          rowKey = "id",
                          title = "",
+                         style = null,
                          newRowKeyPrefix = "new_",
                          cols = defaultArr,
                          allCols = [],
@@ -460,32 +461,34 @@ const EditableTable = ({ form,
   },[editingKey,changedData,columnSeq]);
 
   const footer = () => (
-    <div className={styles.antETableBottomBar}>
-      {!showBottomPager && <div />}
-      <div>
-        {showAddBtn && (
-          <Button icon="plus" onClick={handleAdd} style={{ marginRight: 8 }}>
-            {i18n['add']}
-          </Button>
-        )}
-        {buttons}
+    !buttons && !showBottomPager && !showAddBtn ? (null):(
+      <div className={styles.antETableBottomBar}>
+        {!showBottomPager && <div />}
+        <div>
+          {showAddBtn && (
+            <Button icon="plus" onClick={handleAdd} style={{ marginRight: 8 }}>
+              {i18n['add']}
+            </Button>
+          )}
+          {buttons}
+        </div>
+        {showBottomPager &&
+        <Pagination
+          showSizeChanger
+          showQuickJumper
+          position="bottom"
+          size="small"
+          pageSizeOptions={['5', '10', '20', '30', '40']}
+          showTotal={(t, range) => { return `${i18n['total.prefix']} ${t} ${i18n['total.suffix']}`}}
+          onChange={(current, size) => handleTableChange({ currentPage: current, pageSize: size })}
+          onShowSizeChange={(current, size) => handleTableChange({ currentPage: current, pageSize: size })}
+          current={pager.currentPage}
+          pageSize={pager.pageSize}
+          total={total}
+        />
+        }
       </div>
-      {showBottomPager &&
-      <Pagination
-        showSizeChanger
-        showQuickJumper
-        position="bottom"
-        size="small"
-        pageSizeOptions={['5', '10', '20', '30', '40']}
-        showTotal={(t, range) => { return `${i18n['total.prefix']} ${t} ${i18n['total.suffix']}`}}
-        onChange={(current, size) => handleTableChange({ currentPage: current, pageSize: size })}
-        onShowSizeChange={(current, size) => handleTableChange({ currentPage: current, pageSize: size })}
-        current={pager.currentPage}
-        pageSize={pager.pageSize}
-        total={total}
-      />
-      }
-    </div>
+    )
   );
 
   const components = {
@@ -541,7 +544,7 @@ const EditableTable = ({ form,
   />;
   return (
     <EditableContext.Provider value={{ form, rowKey, changedData, filter, filterVisible, setFilter, selectedRowKeys,showSelector,columns,setColumns }}>
-      <div className={styles.antETable}>
+      <div className={styles.antETable} style={style}>
         <div className={styles.antETableHeader}>
           <div className={styles.antETableTitle}>{title}</div>
           <div className={styles.antETableToolbar}>
@@ -599,7 +602,6 @@ const EditableTable = ({ form,
         <Table bordered
                size="middle"
                rowKey={rowKey}
-               style={{ marginBottom: 24 }}
                rowSelection={rowSelection}
                footer={footer}
                pagination={false}

@@ -101,10 +101,11 @@ export default function() {
   const [showTopPager,setShowTopPager] = useState(true);
   const [showBottomPager,setShowBottomPager] = useState(false);
   const [loading,setLoading] = useState(true);
-  const buttons = <>
+  const demoButtons = <>
     <Button style={{marginRight:8}}>按钮一</Button>
     <Button>按钮二</Button>
   </>;
+  const [buttons,setButtons] = useState(demoButtons);
   setTimeout(()=> setLoading(false), 500 );
   const fetch = (pager,filter,sorter) => {
     console.log('onFetch',pager,filter,sorter);
@@ -121,6 +122,7 @@ export default function() {
         <Checkbox onChange={(e)=>setShowAddBtn(e.target.checked)} checked={showAddBtn}>显示添加按钮</Checkbox>
         <Checkbox onChange={(e)=>setShowTopPager(e.target.checked)} checked={showTopPager}>显示顶部分页器</Checkbox>
         <Checkbox onChange={(e)=>setShowBottomPager(e.target.checked)} checked={showBottomPager}>显示底部分页器</Checkbox>
+        <Checkbox onChange={(e)=>e.target.checked ? setButtons(demoButtons):setButtons(null)} checked={!!buttons}>显示底部自定义按钮</Checkbox>
         <Button type="primary" onClick={()=>{console.log('onSave',changedData);}}>保存</Button>
       </div>
       <EditableTable
