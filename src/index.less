@@ -44,6 +44,10 @@
     display: flex;
     justify-content: space-between;
   }
+  .antETableContent {
+    border: 1px solid #e8e8e8;
+    border-radius: 4px;
+  }
   :global {
     .ant-table table {
       table-layout: fixed;
@@ -70,22 +74,6 @@
       tr:hover:not(.ant-table-expanded-row) {
         td {
           background: #e8f7f2;
-        }
-      }
-    }
-    .ant-table-bordered {
-      .ant-table-tbody {
-        tr {
-          td {
-            border-right: 0;
-            word-break: keep-all;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-          td:last-of-type {
-            border-right: 1px solid #e8e8e8;
-          }
         }
       }
     }

@@ -244,6 +244,7 @@ const EditableCell = ({editor = { type: 'text' }, editing, dataIndex, title, rec
 const defaultArr = [];
 
 const EditableTable = ({ form,
+                         bordered = false,
                          lang = "zh",
                          rowKey = "id",
                          title = "",
@@ -326,13 +327,7 @@ const EditableTable = ({ form,
   };
 
   if (!showSelector) {
-    rowSelection = {
-      ...rowSelection,
-      columnWidth: 0,
-      columnTitle: () => {
-        return <div />;
-      },
-    };
+    rowSelection = undefined;
   }
 
   const handleAdd = () => {
@@ -599,7 +594,8 @@ const EditableTable = ({ form,
             }
           </div>
         </div>
-        <Table bordered
+        <Table className={bordered ? null: styles.antETableContent}
+               bordered={bordered}
                size="middle"
                rowKey={rowKey}
                rowSelection={rowSelection}
