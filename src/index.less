@@ -71,6 +71,14 @@
       }
     }
     .ant-table-tbody {
+      tr {
+        td {
+          word-break: keep-all;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
       tr:hover:not(.ant-table-expanded-row) {
         td {
           background: #e8f7f2;
