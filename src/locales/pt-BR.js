@@ -1,0 +1,17 @@
+export default {
+  'filter.expand': 'Expandir filtro',
+  'filter.collapse': 'Esconder filtro',
+  'filter.clear': 'Remover filtro',
+  'total.prefix': 'Total',
+  'total.suffix': 'Linhas',
+  'add': 'Adicionar',
+  'edit': 'Editar',
+  'delete': 'Excluir',
+  'undelete': 'Desfazer excluir',
+  'ok': 'Ok',
+  'cancel': 'Cancelar',
+  'op': 'Ação',
+  'search': 'Procurar',
+  'columns': 'Colunas',
+  'download': 'Baixar',
+};
