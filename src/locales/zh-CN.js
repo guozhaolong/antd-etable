@@ -4,7 +4,7 @@ export default {
   'filter.clear': '清除过滤器',
   'total.prefix': '共',
   'total.suffix': '条',
-  'add': '添加数据',
+  'add': '添加',
   'edit': '编辑',
   'delete': '删除',
   'undelete': '取消删除',
