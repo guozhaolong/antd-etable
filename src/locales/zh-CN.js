@@ -14,4 +14,5 @@ export default {
   'search': '查询',
   'columns': '显示列',
   'download': '下载',
+  'select': '选择记录',
 };

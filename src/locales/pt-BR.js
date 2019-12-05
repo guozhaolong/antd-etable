@@ -14,4 +14,5 @@ export default {
   'search': 'Procurar',
   'columns': 'Colunas',
   'download': 'Baixar',
+  'select': 'Selecionar Registro',
 };

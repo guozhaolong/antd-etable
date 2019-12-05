@@ -140,6 +140,7 @@ const ResizeableCell = props => {
           width: size.width,
         };
         setColumns(nextColumns);
+        e.stopPropagation();
       }}
       draggableOpts={{ enableUserSelectHack: false }}
     >
@@ -258,11 +259,11 @@ const EditableTable = ({ form,
                          pageSize = 10,
                          total = 0,
                          scroll = {x : null},
-                         multiSelect = false,
+                         multiSelect = true,
                          showToolbar = true,
                          showAddBtn = true,
                          showOpBtn = true,
-                         showSelector = false,
+                         showSelector:defaultShowSelecor = false,
                          showTopPager = true,
                          showBottomPager = false,
                          buttons,
@@ -285,6 +286,7 @@ const EditableTable = ({ form,
   const newData = changedData.filter(s => s.isNew);
   const dataSource = newData.concat(updateData);
 
+  const [showSelector,setShowSelector] = useState(defaultShowSelecor);
   const [editingKey,setEditingKey] = useState('');
   const [filterVisible,setFilterVisible] = useState(false);
   const [filter,setFilter] = useState({});
@@ -457,31 +459,36 @@ const EditableTable = ({ form,
 
   const footer = () => (
     !buttons && !showBottomPager && !showAddBtn ? (null):(
-      <div className={styles.antETableBottomBar}>
-        {!showBottomPager && <div />}
-        <div>
-          {showAddBtn && (
-            <Button icon="plus" onClick={handleAdd} style={{ marginRight: 8 }}>
-              {i18n['add']}
-            </Button>
-          )}
-          {buttons}
+      <div>
+        <div style={{float:'left'}}>
+          <Checkbox onClick={(e)=>setShowSelector(e.target.checked)}>{i18n['select']}</Checkbox>
         </div>
-        {showBottomPager &&
-        <Pagination
-          showSizeChanger
-          showQuickJumper
-          position="bottom"
-          size="small"
-          pageSizeOptions={['5', '10', '20', '30', '40']}
-          showTotal={(t, range) => { return `${i18n['total.prefix']} ${t} ${i18n['total.suffix']}`}}
-          onChange={(current, size) => handleTableChange({ currentPage: current, pageSize: size })}
-          onShowSizeChange={(current, size) => handleTableChange({ currentPage: current, pageSize: size })}
-          current={pager.currentPage}
-          pageSize={pager.pageSize}
-          total={total}
-        />
-        }
+        <div className={styles.antETableBottomBar}>
+          {!showBottomPager && <div />}
+          <div>
+            {showAddBtn && (
+              <Button icon="plus" onClick={handleAdd} style={{ marginRight: 8 }}>
+                {i18n['add']}
+              </Button>
+            )}
+            {buttons}
+          </div>
+          {showBottomPager &&
+          <Pagination
+            showSizeChanger
+            showQuickJumper
+            position="bottom"
+            size="small"
+            pageSizeOptions={['5', '10', '20', '30', '40']}
+            showTotal={(t, range) => { return `${i18n['total.prefix']} ${t} ${i18n['total.suffix']}`}}
+            onChange={(current, size) => handleTableChange({ currentPage: current, pageSize: size })}
+            onShowSizeChange={(current, size) => handleTableChange({ currentPage: current, pageSize: size })}
+            current={pager.currentPage}
+            pageSize={pager.pageSize}
+            total={total}
+          />
+          }
+        </div>
       </div>
     )
   );
@@ -609,6 +616,9 @@ const EditableTable = ({ form,
                onRow={record => ({
                  onClick: event => {
                    if(!showSelector && record[rowKey] !== editingKey){
+                     if(!selectedRowKeys.find(k => k === record[rowKey])) {
+                       setSelectedRowKeys([record[rowKey]]);
+                     }
                      onSelectRow([record])
                    }
                  }

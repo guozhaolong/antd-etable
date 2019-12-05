@@ -14,4 +14,5 @@ export default {
   'search': 'Search',
   'columns': 'Columns',
   'download': 'Download',
+  'select': 'Select Record',
 };

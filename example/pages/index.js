@@ -116,7 +116,6 @@ export default function() {
     <div className={styles.root} style={{width:1300}}>
       <div style={{textAlign:'right',marginBottom:16}}>
         <Checkbox onChange={(e)=>setMultiSelect(e.target.checked)} checked={multiSelect}>多选</Checkbox>
-        <Checkbox onChange={(e)=>setShowSelector(e.target.checked)} checked={showSelector}>显示选择列</Checkbox>
         <Checkbox onChange={(e)=>setShowToolbar(e.target.checked)} checked={showToolbar}>显示工具栏按钮</Checkbox>
         <Checkbox onChange={(e)=>setShowAddBtn(e.target.checked)} checked={showAddBtn}>显示添加按钮</Checkbox>
         <Checkbox onChange={(e)=>setShowTopPager(e.target.checked)} checked={showTopPager}>显示顶部分页器</Checkbox>
