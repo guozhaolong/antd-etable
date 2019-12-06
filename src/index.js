@@ -458,39 +458,41 @@ const EditableTable = ({ form,
   },[editingKey,changedData,columnSeq]);
 
   const footer = () => (
-    !buttons && !showBottomPager && !showAddBtn ? (null):(
-      <div>
-        <div style={{float:'left',paddingTop:4}}>
-          <Checkbox onClick={(e)=>setShowSelector(e.target.checked)}>{i18n['select']}</Checkbox>
-        </div>
-        <div className={styles.antETableBottomBar}>
-          {!showBottomPager && <div />}
-          <div>
-            {showAddBtn && (
-              <Button icon="plus" onClick={handleAdd} style={{ marginRight: 8 }}>
-                {i18n['add']}
-              </Button>
-            )}
-            {buttons}
-          </div>
-          {showBottomPager &&
-          <Pagination
-            showSizeChanger
-            showQuickJumper
-            position="bottom"
-            size="small"
-            pageSizeOptions={['5', '10', '20', '30', '40']}
-            showTotal={(t, range) => { return `${i18n['total.prefix']} ${t} ${i18n['total.suffix']}`}}
-            onChange={(current, size) => handleTableChange({ currentPage: current, pageSize: size })}
-            onShowSizeChange={(current, size) => handleTableChange({ currentPage: current, pageSize: size })}
-            current={pager.currentPage}
-            pageSize={pager.pageSize}
-            total={total}
-          />
-          }
-        </div>
+    <>
+      <div style={{float:'left',paddingTop:4}}>
+        <Checkbox onClick={(e)=>setShowSelector(e.target.checked)}>{i18n['select']}</Checkbox>
       </div>
-    )
+      {
+        !buttons && !showBottomPager && !showAddBtn ? (null):
+          (<div className={styles.antETableBottomBar}>
+            {!showBottomPager && <div />}
+            <div>
+              {showAddBtn && (
+                <Button icon="plus" onClick={handleAdd} style={{ marginRight: 8 }}>
+                  {i18n['add']}
+                </Button>
+              )}
+              {buttons}
+            </div>
+            {
+              showBottomPager &&
+              <Pagination
+                showSizeChanger
+                showQuickJumper
+                position="bottom"
+                size="small"
+                pageSizeOptions={['5', '10', '20', '30', '40']}
+                showTotal={(t, range) => { return `${i18n['total.prefix']} ${t} ${i18n['total.suffix']}`}}
+                onChange={(current, size) => handleTableChange({ currentPage: current, pageSize: size })}
+                onShowSizeChange={(current, size) => handleTableChange({ currentPage: current, pageSize: size })}
+                current={pager.currentPage}
+                pageSize={pager.pageSize}
+                total={total}
+              />
+            }
+        </div>)
+      }
+    </>
   );
 
   const components = {
