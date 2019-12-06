@@ -460,7 +460,7 @@ const EditableTable = ({ form,
   const footer = () => (
     !buttons && !showBottomPager && !showAddBtn ? (null):(
       <div>
-        <div style={{float:'left'}}>
+        <div style={{float:'left',paddingTop:4}}>
           <Checkbox onClick={(e)=>setShowSelector(e.target.checked)}>{i18n['select']}</Checkbox>
         </div>
         <div className={styles.antETableBottomBar}>

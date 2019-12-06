@@ -37,7 +37,7 @@
     justify-content: space-between;
   }
   .antETableContent {
-    border: 1px solid #e8e8e8;
+    border: 1px solid @border-color-base;
     border-radius: 4px;
   }
   :global {
@@ -71,11 +71,9 @@
           text-overflow: ellipsis;
         }
       }
-      tr:hover:not(.ant-table-expanded-row) {
-        td {
-          background: @table-row-hover-bg;
-        }
-      }
+    }
+    .ant-table-footer {
+      padding: 8px;
     }
     .ant-pagination-total-text {
       margin-right: 0;
