@@ -603,7 +603,7 @@ const EditableTable = ({ form,
             }
           </div>
         </div>
-        <Table className={bordered ? null: styles.antETableContent}
+        <Table
                bordered={bordered}
                size="middle"
                rowKey={rowKey}
