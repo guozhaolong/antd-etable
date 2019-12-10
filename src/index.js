@@ -411,7 +411,7 @@ const EditableTable = ({ form,
               ) : (
                 <a disabled={editingKey !== ''} onClick={(e) => {setEditingKey(record[rowKey]);e.stopPropagation();}}>
                   <Tooltip title={i18n['edit']}>
-                    <Icon type="edit" />
+                    <Icon type="edit" style={{color:'#666'}}/>
                   </Tooltip>
                 </a>
               ))}
