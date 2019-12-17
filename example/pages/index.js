@@ -124,7 +124,7 @@ export default function() {
         <Button type="primary" onClick={()=>{console.log('onSave',changedData);}}>保存</Button>
       </div>
       <EditableTable
-        bordered={true}
+        bordered={false}
         rowKey="id"
         title=""
         scroll={{x:1400}}
@@ -142,7 +142,6 @@ export default function() {
         showTopPager={showTopPager}
         showToolbar={showToolbar}
         showBottomPager={showBottomPager}
-        buttons={buttons}
         onFetch={(pager,filter,sorter)=>fetch(pager,filter,sorter)}
         onChangedDataUpdate={(d)=>{setChangedData(d)}}
         onAdd={()=>{console.log('onAdd');return {}}}

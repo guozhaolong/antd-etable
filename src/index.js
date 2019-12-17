@@ -462,6 +462,7 @@ const EditableTable = ({ form,
       <div style={{float:'left',paddingTop:4}}>
         <Checkbox onClick={(e)=>setShowSelector(e.target.checked)}>{i18n['select']}</Checkbox>
       </div>
+      <div>
       {
         !buttons && !showBottomPager && !showAddBtn ? (null):
           (<div className={styles.antETableBottomBar}>
@@ -492,6 +493,7 @@ const EditableTable = ({ form,
             }
         </div>)
       }
+      </div>
     </>
   );
 
@@ -578,12 +580,12 @@ const EditableTable = ({ form,
                         onClick={()=>{
                           if(!_.isEmpty(filter)) {
                             setFilter({});
-                            handleTableChange();
+                            handleTableChange({currentPage:1,pageSize:pager.pageSize});
                           }
                         }} />
                 </Tooltip>
                 <Tooltip title={i18n['search']}>
-                  <Icon type="search" onClick={() => handleTableChange()} />
+                  <Icon type="search" onClick={() => handleTableChange({currentPage:1,pageSize:pager.pageSize})} />
                 </Tooltip>
                 <Tooltip title={i18n['columns']}>
                   <Popover
