@@ -14,6 +14,8 @@ import {
   Divider,
   Popover,
   List,
+  Row,
+  Col
 } from 'antd';
 import 'antd/lib/form/style';
 import 'antd/lib/table/style';
@@ -458,11 +460,11 @@ const EditableTable = ({ form,
   },[editingKey,changedData,columnSeq]);
 
   const footer = () => (
-    <>
-      <div style={{float:'left',paddingTop:4}}>
+    <Row>
+      <Col span={2} style={{alignText:'left'}}>
         <Checkbox onClick={(e)=>setShowSelector(e.target.checked)}>{i18n['select']}</Checkbox>
-      </div>
-      <div>
+      </Col>
+      <Col span={22}>
       {
         !buttons && !showBottomPager && !showAddBtn ? (null):
           (<div className={styles.antETableBottomBar}>
@@ -493,8 +495,8 @@ const EditableTable = ({ form,
             }
         </div>)
       }
-      </div>
-    </>
+      </Col>
+    </Row>
   );
 
   const components = {
