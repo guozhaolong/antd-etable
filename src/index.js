@@ -320,8 +320,13 @@ const EditableTable = ({ form,
       setPager({ currentPage: current,pageSize:size });
     }
     if(!_.isEmpty(f)) {
-      filters = {...filter, ...f};
-      setFilter(f);
+      if(f.clear) {
+        setFilter({});
+        filters = {};
+      }else {
+        filters = { ...filter, ...f };
+        setFilter(f);
+      }
     }
     if(!_.isEmpty(s)) {
       sorters = {[s.field]:s.order};
@@ -591,9 +596,8 @@ const EditableTable = ({ form,
                         style={{ cursor: _.isEmpty(filter) ? 'default' : 'pointer',color:_.isEmpty(filter) ? '#ddd' : '#666' }}
                         onClick={()=>{
                           if(!_.isEmpty(filter)) {
-                            setFilter({});
                             form.resetFields();
-                            handleTableChange({currentPage:1});
+                            handleTableChange({currentPage:1},{clear:true});
                           }
                         }} />
                 </Tooltip>
