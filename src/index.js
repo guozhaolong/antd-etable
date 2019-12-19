@@ -98,7 +98,7 @@ function exportCSV(payload){
 }
 
 const EditableHRow = props => {
-  const { filter,filterVisible,setFilter,columns } = useContext(EditableContext);
+  const { filter,filterVisible,setFilter,columns,handleTableChange } = useContext(EditableContext);
   return (
     <>
       <tr {...props} />
@@ -112,7 +112,7 @@ const EditableHRow = props => {
               const { editor = {}, align = 'left' } = col;
               return (
                 <th key={`filter${td.key}`} style={{ padding: 5,textAlign: align }}>
-                  {getFilterInput(editor,filter[td.key],value => { setFilter({...filter,[td.key]: value})})}
+                  {getFilterInput(editor,filter[td.key],value => setFilter({...filter,[td.key]: value}),handleTableChange)}
                 </th>
               );
             } else {
@@ -166,14 +166,16 @@ const EditableRow = props => {
   return <tr {...props} style={style} />;
 };
 
-const getFilterInput = (editor,value,onChange) => {
+const getFilterInput = (editor,value,onChange,onSearch) => {
   const { type = 'text', options = [] } = editor;
   switch (type) {
     case 'number':
-      return <InputNumber value={value} onChange={(value)=>onChange(value)}/>;
+      return <InputNumber value={value}
+                          onChange={(value)=>onChange(value)}
+                          onKeyPress={(e)=> e.nativeEvent.key === 'Enter' ? onSearch({currentPage:1}) : null} />;
     case 'select':
       return (
-        <Select style={{ width: '100%' }} value={value} onChange={(value)=>onChange(value)}>
+        <Select style={{ width: '100%' }} value={value} onChange={(value)=>onChange(value)} >
           {options.map(o => (
             <Select.Option key={o.key} value={o.key}>
               {o.value}
@@ -182,13 +184,22 @@ const getFilterInput = (editor,value,onChange) => {
         </Select>
       );
     case 'datetime':
-      return <RangePicker style={{width:'100%'}} showTime format={dateFormat} value={value} onChange={(dates)=>onChange(dates)}/>;
+      return <RangePicker style={{width:'100%'}}
+                          showTime
+                          format={dateFormat}
+                          value={value}
+                          onChange={(dates)=>onChange(dates)} />;
     case 'checkbox':
-      return <Checkbox checked={value} onChange={(e)=>onChange(e.target.checked)}/>;
+      return <Checkbox checked={value}
+                       onChange={(e)=>onChange(e.target.checked)} />;
     case 'text':
-      return <Input onChange={(e)=>onChange(e.target.value.trim())}/>;
+      return <Input value={value}
+                    onChange={(e)=>onChange(e.target.value.trim())}
+                    onKeyPress={(e)=> e.nativeEvent.key === 'Enter' ? onSearch({currentPage:1}) : null} />;
     default:
-      return <Input onChange={(e)=>onChange(e.target.value.trim())}/>;
+      return <Input value={value}
+                    onChange={(e)=>onChange(e.target.value.trim())}
+                    onKeyPress={(e)=> e.nativeEvent.key === 'Enter' ? onSearch({currentPage:1}) : null} />;
   }
 };
 
@@ -287,7 +298,6 @@ const EditableTable = ({ form,
   });
   const newData = changedData.filter(s => s.isNew);
   const dataSource = newData.concat(updateData);
-
   const [showSelector,setShowSelector] = useState(defaultShowSelecor);
   const [editingKey,setEditingKey] = useState('');
   const [filterVisible,setFilterVisible] = useState(false);
@@ -304,10 +314,10 @@ const EditableTable = ({ form,
     let size = pager.pageSize;
     let filters = filter;
     let sorters = sorter;
-    if(p && p.pageSize) {
+    if(p && p.currentPage) {
       current = p.currentPage;
-      size = p.pageSize;
-      setPager({ currentPage: p.currentPage, pageSize: p.pageSize });
+      size = p.pageSize || pager.pageSize;
+      setPager({ currentPage: current,pageSize:size });
     }
     if(!_.isEmpty(f)) {
       filters = {...filter, ...f};
@@ -551,7 +561,7 @@ const EditableTable = ({ form,
     )}
   />;
   return (
-    <EditableContext.Provider value={{ form, rowKey, changedData, filter, filterVisible, setFilter, selectedRowKeys,showSelector,columns,setColumns }}>
+    <EditableContext.Provider value={{ form, rowKey, changedData, filter, filterVisible, setFilter, selectedRowKeys,showSelector,columns,setColumns,handleTableChange }}>
       <div className={styles.antETable} style={style}>
         <div className={styles.antETableHeader}>
           <div className={styles.antETableTitle}>{title}</div>
@@ -582,12 +592,13 @@ const EditableTable = ({ form,
                         onClick={()=>{
                           if(!_.isEmpty(filter)) {
                             setFilter({});
-                            handleTableChange({currentPage:1,pageSize:pager.pageSize});
+                            form.resetFields();
+                            handleTableChange({currentPage:1});
                           }
                         }} />
                 </Tooltip>
                 <Tooltip title={i18n['search']}>
-                  <Icon type="search" onClick={() => handleTableChange({currentPage:1,pageSize:pager.pageSize})} />
+                  <Icon type="search" onClick={() => handleTableChange({currentPage:1})} />
                 </Tooltip>
                 <Tooltip title={i18n['columns']}>
                   <Popover
