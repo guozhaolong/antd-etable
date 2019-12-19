@@ -113,7 +113,7 @@ export default function() {
     setTimeout(()=> setLoading(false), 500 );
   };
   return (
-    <div className={styles.root} style={{width:1300}}>
+    <div className={styles.root} >
       <div style={{textAlign:'right',marginBottom:16}}>
         <Checkbox onChange={(e)=>setMultiSelect(e.target.checked)} checked={multiSelect}>多选</Checkbox>
         <Checkbox onChange={(e)=>setShowToolbar(e.target.checked)} checked={showToolbar}>显示工具栏按钮</Checkbox>

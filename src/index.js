@@ -471,7 +471,7 @@ const EditableTable = ({ form,
 
   const footer = () => (
     <Row>
-      <Col span={2} style={{alignText:'left'}}>
+      <Col span={2} style={{alignText:'left',whiteSpace: 'nowrap'}}>
         <Checkbox onClick={(e)=>setShowSelector(e.target.checked)}>{i18n['select']}</Checkbox>
       </Col>
       <Col span={22}>
