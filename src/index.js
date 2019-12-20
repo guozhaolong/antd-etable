@@ -391,12 +391,12 @@ const EditableTable = ({ form,
   };
 
   const handleDownload = () => {
+    let allData = data;
     if(onDownload) {
-      onDownload(filter, sorter);
-    } else {
-      const header = columnSeq.map(c => {if(c.dataIndex && c.visible) return {dataIndex: c.dataIndex,title: c.title}});
-      exportCSV({ name: 'table', header, data })
+      allData = onDownload(filter, sorter);
     }
+    const header = columnSeq.map(c => {if(c.dataIndex && c.visible) return {dataIndex: c.dataIndex,title: c.title}});
+    exportCSV({ name: 'table', header, allData })
   };
 
   const getColumns = () => {
