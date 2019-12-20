@@ -276,6 +276,7 @@ const EditableTable = ({ form,
                          showToolbar = true,
                          showAddBtn = true,
                          showOpBtn = true,
+                         showSelectRecord = true,
                          showSelector:defaultShowSelecor = false,
                          showTopPager = true,
                          showBottomPager = false,
@@ -476,10 +477,10 @@ const EditableTable = ({ form,
 
   const footer = () => (
     <Row>
-      <Col span={2} style={{alignText:'left',whiteSpace: 'nowrap'}}>
-        <Checkbox onClick={(e)=>setShowSelector(e.target.checked)}>{i18n['select']}</Checkbox>
+      <Col span={showSelectRecord ? 2 : 0} style={{alignText:'left',whiteSpace: 'nowrap'}}>
+        {showSelectRecord && <Checkbox onClick={(e)=>setShowSelector(e.target.checked)}>{i18n['select']}</Checkbox>}
       </Col>
-      <Col span={22}>
+      <Col span={showSelectRecord ? 22 : 24}>
       {
         !buttons && !showBottomPager && !showAddBtn ? (null):
           (<div className={styles.antETableBottomBar}>
