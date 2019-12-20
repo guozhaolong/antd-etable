@@ -397,7 +397,7 @@ const EditableTable = ({ form,
       allData = onDownload(filter, sorter);
     }
     const header = columnSeq.map(c => {if(c.dataIndex && c.visible) return {dataIndex: c.dataIndex,title: c.title}});
-    exportCSV({ name: 'table', header, allData })
+    exportCSV({ name: 'table', header, data:allData })
   };
 
   const getColumns = () => {
