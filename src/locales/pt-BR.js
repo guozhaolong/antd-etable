@@ -17,4 +17,5 @@ export default {
   'select': 'Selecionar Registro',
   'collapse': 'Esconder Mesa',
   'expand': 'Expandir Mesa',
+  'empty': 'Sem Dados',
 };

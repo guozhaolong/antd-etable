@@ -17,4 +17,5 @@ export default {
   'select': 'Select Record',
   'collapse': 'Collapse Table',
   'expand': 'Expand Table',
+  'empty': 'No Data',
 };

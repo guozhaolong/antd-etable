@@ -17,4 +17,5 @@ export default {
   'select': '选择记录',
   'collapse': '收起',
   'expand': '展开',
+  'empty': '无数据',
 };

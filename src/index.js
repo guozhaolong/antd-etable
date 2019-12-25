@@ -15,7 +15,8 @@ import {
   Popover,
   List,
   Row,
-  Col
+  Col,
+  Empty
 } from 'antd';
 import 'antd/lib/form/style';
 import 'antd/lib/table/style';
@@ -641,6 +642,7 @@ const EditableTable = ({ form,
         </div>
         {!collapsed &&
           <Table
+            locale={{emptyText:<Empty description={i18n['empty']}/>}}
             bordered={bordered}
             size="middle"
             rowKey={rowKey}
