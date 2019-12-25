@@ -135,6 +135,7 @@ export default function() {
         total={100}
         cols={cols}
         allCols={allCols}
+        buttons={buttons}
         showOpBtn={showOpBtn}
         showAddBtn={showAddBtn}
         multiSelect={multiSelect}
