@@ -102,8 +102,8 @@ export default function() {
   const [showBottomPager,setShowBottomPager] = useState(false);
   const [loading,setLoading] = useState(true);
   const demoButtons = <>
-    <Button style={{marginRight:8}}>按钮一</Button>
-    <Button>按钮二</Button>
+    <Button size="small" style={{marginRight:8}}>按钮一</Button>
+    <Button size="small">按钮二</Button>
   </>;
   const [buttons,setButtons] = useState(demoButtons);
   setTimeout(()=> setLoading(false), 500 );
