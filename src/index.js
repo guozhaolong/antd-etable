@@ -571,10 +571,46 @@ const EditableTable = ({ form,
       <div className={styles.antETable} style={style}>
         <div className={styles.antETableHeader}>
           <div className={styles.antETableTitle}>{title}</div>
+          { title && <Divider type="vertical" style={{marginTop:6}}/>}
           <div className={styles.antETableToolbar}>
+            { showToolbar &&
+            <>
+              <Tooltip title={filterVisible ? i18n['filter.collapse'] : i18n['filter.expand']}>
+                <Icon type="filter" theme={filterVisible ? 'filled':'outlined'} onClick={()=>setFilterVisible(!filterVisible)} />
+              </Tooltip>
+              <Tooltip title={i18n['filter.clear']}>
+                <Icon type="rest"
+                      theme="filled"
+                      style={{ cursor: _.isEmpty(filter) ? 'default' : 'pointer',color:_.isEmpty(filter) ? '#ddd' : '#666' }}
+                      onClick={()=>{
+                        if(!_.isEmpty(filter)) {
+                          form.resetFields();
+                          handleTableChange({currentPage:1},{clear:true});
+                        }
+                      }} />
+              </Tooltip>
+              <Tooltip title={i18n['search']}>
+                <Icon type="search" onClick={() => handleTableChange({currentPage:1})} />
+              </Tooltip>
+              <Tooltip title={i18n['columns']}>
+                <Popover
+                  placement="bottom"
+                  content={columnsFilter}
+                  trigger="click"
+                  visible={columnsPopVisible}
+                  onVisibleChange={(visible) => setColumnsPopVisible(visible)}
+                >
+                  <Icon type="unordered-list"/>
+                </Popover>
+              </Tooltip>
+              <Tooltip title={i18n['download']}>
+                <Icon type="download" onClick={() => handleDownload()}/>
+              </Tooltip>
+            </>
+            }
             {showTopPager && (
               <>
-                <div>{`${i18n['total.prefix']} ${total} ${i18n['total.suffix']}`}</div>
+                { showToolbar && <Divider type="vertical" style={{marginTop:6}}/> }
                 <Pagination
                   simple
                   defaultCurrent={1}
@@ -582,45 +618,11 @@ const EditableTable = ({ form,
                   current={pager.currentPage}
                   pageSize={pager.pageSize}
                   onChange={(current, size) => handleTableChange({ currentPage: current, pageSize: size })}
-                  style={{ display: 'inline-block', marginRight: 16 }}
+                  style={{ display: 'inline-block', marginRight: 4 }}
                 />
+                <div>{`${i18n['total.prefix']} ${total} ${i18n['total.suffix']}`}</div>
               </>
             )}
-            { showToolbar &&
-              <>
-                <Tooltip title={filterVisible ? i18n['filter.collapse'] : i18n['filter.expand']}>
-                  <Icon type="filter" theme={filterVisible ? 'filled':'outlined'} onClick={()=>setFilterVisible(!filterVisible)} />
-                </Tooltip>
-                <Tooltip title={i18n['filter.clear']}>
-                  <Icon type="rest"
-                        theme="filled"
-                        style={{ cursor: _.isEmpty(filter) ? 'default' : 'pointer',color:_.isEmpty(filter) ? '#ddd' : '#666' }}
-                        onClick={()=>{
-                          if(!_.isEmpty(filter)) {
-                            form.resetFields();
-                            handleTableChange({currentPage:1},{clear:true});
-                          }
-                        }} />
-                </Tooltip>
-                <Tooltip title={i18n['search']}>
-                  <Icon type="search" onClick={() => handleTableChange({currentPage:1})} />
-                </Tooltip>
-                <Tooltip title={i18n['columns']}>
-                  <Popover
-                    placement="bottom"
-                    content={columnsFilter}
-                    trigger="click"
-                    visible={columnsPopVisible}
-                    onVisibleChange={(visible) => setColumnsPopVisible(visible)}
-                  >
-                    <Icon type="unordered-list" />
-                  </Popover>
-                </Tooltip>
-                <Tooltip title={i18n['download']}>
-                  <Icon type="download" onClick={() => handleDownload()} />
-                </Tooltip>
-              </>
-            }
           </div>
         </div>
         <Table

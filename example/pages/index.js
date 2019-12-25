@@ -126,7 +126,7 @@ export default function() {
       <EditableTable
         bordered={false}
         rowKey="id"
-        title=""
+        title="测试列表"
         scroll={{x:1400}}
         loading={loading}
         data={data}

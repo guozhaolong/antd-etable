@@ -2,24 +2,32 @@
 .antETable {
   .antETableHeader {
     display: flex;
-    justify-content: space-between;
-    margin-bottom: 8px;
+    //justify-content: space-between;
+    background-color: @background-color-base;
+    padding: 4px 8px;
+    border-bottom: 1px solid @border-color-split;
     .antETableTitle {
       color: @heading-color;
-      font-weight: 500;
-      font-size: 16px;
+      font-weight: 400;
+      font-size: 14px;
     }
     .antETableToolbar {
+      margin-left: 8px;
       display: flex;
       justify-content: space-around;
       > div {
-        margin-top: 4px;
+        line-height: 24px;
       }
       > i > svg {
         margin-top: 6px;
         margin-right: 16px;
         cursor: pointer;
         font-size: 12px;
+      }
+      :global {
+        .ant-pagination-item-link {
+          background-color: transparent;
+        }
       }
     }
   }
