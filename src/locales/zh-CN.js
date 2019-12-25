@@ -15,4 +15,6 @@ export default {
   'columns': '显示列',
   'download': '下载',
   'select': '选择记录',
+  'collapse': '收起',
+  'expand': '展开',
 };

@@ -307,8 +307,10 @@ const EditableTable = ({ form,
   const [pager,setPager] = useState({currentPage:1, pageSize});
   const [selectedRowKeys,setSelectedRowKeys] = useState([]);
   const [columnSeq,setColumnSeq] = useState(cols.map((c,idx) => ({...c,idx,visible:true})));
-  const [columns,setColumns] = useState([]);
+  const [allColumnSeq,setAllColumnSeq] = useState([]);
+  const [columns,setColumns] = useState(allCols);
   const [columnsPopVisible,setColumnsPopVisible] = useState(false);
+  const [collapsed,setCollapsed] = useState(false);
 
   const handleTableChange = (p, f, s) => {
     let current = pager.currentPage;
@@ -470,6 +472,11 @@ const EditableTable = ({ form,
   };
   useEffect(()=>{
     setColumnSeq(cols.map((c,idx) => ({...c,idx,visible:true})));
+    if(!allCols || allCols.length === 0){
+      setAllColumnSeq(cols);
+    } else {
+      setAllColumnSeq(allCols);
+    }
   },[cols]);
   useEffect(()=>{
     setColumns(getColumns());
@@ -487,7 +494,7 @@ const EditableTable = ({ form,
             {!showBottomPager && <div />}
             <div>
               {showAddBtn && (
-                <Button icon="plus" onClick={handleAdd} style={{ marginRight: 8 }}>
+                <Button icon="plus" size="small" onClick={handleAdd} style={{ marginRight: 8 }}>
                   {i18n['add']}
                 </Button>
               )}
@@ -528,10 +535,10 @@ const EditableTable = ({ form,
   const columnsFilter = <List
     bordered={true}
     size="small"
-    dataSource={allCols}
+    dataSource={allColumnSeq}
     renderItem={(item,idx) => (
       <List.Item>
-        <Checkbox checked={columnSeq.find(c => c.dataIndex === item.dataIndex && c.visible)?true:false}
+        <Checkbox checked={!!columnSeq.find(c => c.dataIndex === item.dataIndex && c.visible)}
                   onChange={(e)=>{
                     if(e.target.checked){
                       let flag = true;
@@ -570,85 +577,94 @@ const EditableTable = ({ form,
     <EditableContext.Provider value={{ form, rowKey, changedData, filter, filterVisible, setFilter, selectedRowKeys,showSelector,columns,setColumns,handleTableChange }}>
       <div className={styles.antETable} style={style}>
         <div className={styles.antETableHeader}>
-          <div className={styles.antETableTitle}>{title}</div>
-          { title && <Divider type="vertical" style={{marginTop:6}}/>}
-          <div className={styles.antETableToolbar}>
-            { showToolbar &&
-            <>
-              <Tooltip title={filterVisible ? i18n['filter.collapse'] : i18n['filter.expand']}>
-                <Icon type="filter" theme={filterVisible ? 'filled':'outlined'} onClick={()=>setFilterVisible(!filterVisible)} />
-              </Tooltip>
-              <Tooltip title={i18n['filter.clear']}>
-                <Icon type="rest"
-                      theme="filled"
-                      style={{ cursor: _.isEmpty(filter) ? 'default' : 'pointer',color:_.isEmpty(filter) ? '#ddd' : '#666' }}
-                      onClick={()=>{
-                        if(!_.isEmpty(filter)) {
-                          form.resetFields();
-                          handleTableChange({currentPage:1},{clear:true});
-                        }
-                      }} />
-              </Tooltip>
-              <Tooltip title={i18n['search']}>
-                <Icon type="search" onClick={() => handleTableChange({currentPage:1})} />
-              </Tooltip>
-              <Tooltip title={i18n['columns']}>
-                <Popover
-                  placement="bottom"
-                  content={columnsFilter}
-                  trigger="click"
-                  visible={columnsPopVisible}
-                  onVisibleChange={(visible) => setColumnsPopVisible(visible)}
-                >
-                  <Icon type="unordered-list"/>
-                </Popover>
-              </Tooltip>
-              <Tooltip title={i18n['download']}>
-                <Icon type="download" onClick={() => handleDownload()}/>
-              </Tooltip>
-            </>
-            }
-            {showTopPager && (
+          <div className={styles.antETableTitleContainer}>
+            <div className={styles.antETableTitle}>{title}</div>
+            { title && <Divider type="vertical" style={{marginTop:7}}/>}
+            <div className={styles.antETableToolbar}>
+              { showToolbar &&
               <>
-                { showToolbar && <Divider type="vertical" style={{marginTop:6}}/> }
-                <Pagination
-                  simple
-                  defaultCurrent={1}
-                  total={total}
-                  current={pager.currentPage}
-                  pageSize={pager.pageSize}
-                  onChange={(current, size) => handleTableChange({ currentPage: current, pageSize: size })}
-                  style={{ display: 'inline-block', marginRight: 4 }}
-                />
-                <div>{`${i18n['total.prefix']} ${total} ${i18n['total.suffix']}`}</div>
+                <Tooltip title={filterVisible ? i18n['filter.collapse'] : i18n['filter.expand']}>
+                  <Icon type="filter" theme={filterVisible ? 'filled':'outlined'} onClick={()=>setFilterVisible(!filterVisible)} />
+                </Tooltip>
+                <Tooltip title={i18n['filter.clear']}>
+                  <Icon type="rest"
+                        theme="filled"
+                        style={{ cursor: _.isEmpty(filter) ? 'default' : 'pointer',color:_.isEmpty(filter) ? '#ddd' : '#666' }}
+                        onClick={()=>{
+                          if(!_.isEmpty(filter)) {
+                            form.resetFields();
+                            handleTableChange({currentPage:1},{clear:true});
+                          }
+                        }} />
+                </Tooltip>
+                <Tooltip title={i18n['search']}>
+                  <Icon type="search" onClick={() => handleTableChange({currentPage:1})} />
+                </Tooltip>
+                <Tooltip title={i18n['columns']}>
+                  <Popover
+                    placement="bottom"
+                    content={columnsFilter}
+                    trigger="click"
+                    visible={columnsPopVisible}
+                    onVisibleChange={(visible) => setColumnsPopVisible(visible)}
+                  >
+                    <Icon type="unordered-list"/>
+                  </Popover>
+                </Tooltip>
               </>
-            )}
+              }
+              {showTopPager && (
+                <>
+                  { showToolbar && <Divider type="vertical" style={{marginTop:7}}/> }
+                  <Pagination
+                    simple
+                    defaultCurrent={1}
+                    total={total}
+                    current={pager.currentPage}
+                    pageSize={pager.pageSize}
+                    onChange={(current, size) => handleTableChange({ currentPage: current, pageSize: size })}
+                    style={{ display: 'inline-block', marginRight: 4 }}
+                  />
+                  <div>{`${i18n['total.prefix']} ${total} ${i18n['total.suffix']}`}</div>
+                </>
+              )}
+            </div>
+          </div>
+          <div className={styles.antETableToolbarRight}>
+            <Tooltip title={i18n['download']}>
+              <Icon type="download" onClick={() => handleDownload()}/>
+            </Tooltip>
+            <Tooltip title={i18n[collapsed ? "expand":"collapse"]}>
+              <Icon type={collapsed ? "column-height":"vertical-align-middle"} onClick={() => setCollapsed(!collapsed)}/>
+            </Tooltip>
           </div>
         </div>
-        <Table
-               bordered={bordered}
-               size="middle"
-               rowKey={rowKey}
-               rowSelection={rowSelection}
-               footer={footer}
-               pagination={false}
-               loading={loading}
-               components={components}
-               columns={columns}
-               dataSource={dataSource}
-               onChange={(p,f,s) => handleTableChange(p,f,s)}
-               onRow={record => ({
-                 onClick: event => {
-                   if(!showSelector && record[rowKey] !== editingKey){
-                     if(!selectedRowKeys.find(k => k === record[rowKey])) {
-                       setSelectedRowKeys([record[rowKey]]);
-                     }
-                     onSelectRow([record])
-                   }
-                 }
-               })}
-               scroll={scroll}
-               {...rest} />
+        {!collapsed &&
+          <Table
+            bordered={bordered}
+            size="middle"
+            rowKey={rowKey}
+            rowSelection={rowSelection}
+            footer={footer}
+            pagination={false}
+            loading={loading}
+            components={components}
+            columns={columns}
+            dataSource={dataSource}
+            onChange={(p,f,s) => handleTableChange(p,f,s)}
+            onRow={record => ({
+              onClick: event => {
+                if(!showSelector && record[rowKey] !== editingKey){
+                  if(!selectedRowKeys.find(k => k === record[rowKey])) {
+                    setSelectedRowKeys([record[rowKey]]);
+                  }
+                  onSelectRow([record])
+                }
+              }
+            })}
+            scroll={scroll}
+            {...rest} />
+        }
       </div>
     </EditableContext.Provider>
   );

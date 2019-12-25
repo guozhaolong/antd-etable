@@ -15,4 +15,6 @@ export default {
   'columns': 'Colunas',
   'download': 'Baixar',
   'select': 'Selecionar Registro',
+  'collapse': 'Esconder Mesa',
+  'expand': 'Expandir Mesa',
 };

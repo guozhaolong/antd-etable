@@ -15,4 +15,6 @@ export default {
   'columns': 'Columns',
   'download': 'Download',
   'select': 'Select Record',
+  'collapse': 'Collapse Table',
+  'expand': 'Expand Table',
 };

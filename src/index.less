@@ -6,10 +6,15 @@
     background-color: @background-color-base;
     padding: 4px 8px;
     border-bottom: 1px solid @border-color-split;
+    .antETableTitleContainer {
+      width: 90%;
+      display: flex;
+    }
     .antETableTitle {
       color: @heading-color;
       font-weight: 400;
       font-size: 14px;
+      white-space: nowrap;
     }
     .antETableToolbar {
       margin-left: 8px;
@@ -28,6 +33,16 @@
         .ant-pagination-item-link {
           background-color: transparent;
         }
+      }
+    }
+    .antETableToolbarRight {
+      width: 10%;
+      text-align: right;
+      > i > svg {
+        margin-top: 6px;
+        margin-right: 16px;
+        cursor: pointer;
+        font-size: 12px;
       }
     }
   }
