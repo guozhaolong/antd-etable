@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect} from "react";
+import React, {useContext, useState, useEffect, useMemo} from "react";
 import {
   Form,
   Table,
@@ -98,33 +98,38 @@ function exportCSV(payload){
   }
 }
 
-const EditableHRow = props => {
-  const { filter,filterVisible,setFilter,columns,handleTableChange } = useContext(EditableContext);
+function flatCols(columns){
+  return columns.flatMap(col => ('children' in col ? flatCols(col.children) : col));
+}
+
+function isFixedHeader(children){
+  return !!children.find(c => !!c.props.fixed);
+}
+
+const EditableHWrapper = ({className,children}) => {
+  const { filter,filterVisible,setFilter,columns,handleTableChange,showSelector } = useContext(EditableContext);
+  const flatColumns = useMemo(()=> flatCols(columns),[columns]);
   return (
-    <>
-      <tr {...props} />
-      {filterVisible && (
+    <thead className={className}>
+      {children}
+      {!isFixedHeader(children) && filterVisible && (
         <tr className={styles.antETableFilter}>
-          { props.children.map(td => {
-            if(td.key === "selection-column"){
-              return <th key={`filter${td.key}`} />;
-            } else if (_.isNaN(parseInt(td.key, 10))) {
-              const col = columns.find(c => td.key === c.dataIndex);
-              const { editor = {}, align = 'left' } = col;
-              return (
-                <th key={`filter${td.key}`} style={{ padding: 5,textAlign: align }}>
-                  {getFilterInput(editor,filter[td.key],value => setFilter({...filter,[td.key]: value}),handleTableChange)}
-                </th>
-              );
-            } else {
+          { showSelector && <th key={`filterSelector`} /> }
+          { flatColumns.map((col,idx) => {
+            const { editor = {}, align = 'left' } = col;
+            if(col.dataIndex)
+              return <th key={`filter${idx}`} style={{ padding: 5,textAlign: align }}>
+                {getFilterInput(editor,filter[col.dataIndex],value => setFilter({...filter,[col.dataIndex]: value}),handleTableChange)}
+              </th>;
+            else
               return undefined;
-            }
           }).filter(a => a !== undefined)}
         </tr>
       )}
-    </>
+    </thead>
   )
 };
+
 
 const ResizeableCell = props => {
   const { columns,setColumns } = useContext(EditableContext);
@@ -525,7 +530,7 @@ const EditableTable = ({ form,
 
   const components = {
     header: {
-      row: EditableHRow,
+      wrapper: EditableHWrapper,
       cell: ResizeableCell,
     },
     body: {
