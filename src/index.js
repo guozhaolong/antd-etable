@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect, useMemo} from "react";
+import React, { useContext, useState, useEffect, useMemo, Component } from 'react';
 import {
   Form,
   Table,
@@ -303,6 +303,7 @@ const EditableTable = ({ form,
                          data = [],
                          changedData = defaultArr,
                          loading = false,
+                         currentPage = 1,
                          pageSize = 10,
                          total = 0,
                          scroll = {x : null},
@@ -323,6 +324,20 @@ const EditableTable = ({ form,
                          onDownload,
                          onSelectRow = () => {},
                          ...rest }) => {
+  const [showSelector,setShowSelector] = useState(defaultShowSelecor);
+  const [editingKey,setEditingKey] = useState('');
+  const [filterVisible,setFilterVisible] = useState(false);
+  const [filter,setFilter] = useState({});
+  const [sorter,setSorter] = useState({});
+  const [pager,setPager] = useState({currentPage, pageSize});
+  const [selectedRowKeys,setSelectedRowKeys] = useState([]);
+  const [columnSeq,setColumnSeq] = useState(cols.map((c,idx) => ({...c,idx,visible:true})));
+  const [allColumnSeq,setAllColumnSeq] = useState([]);
+  const [columns,setColumns] = useState(allCols);
+  const [columnsPopVisible,setColumnsPopVisible] = useState(false);
+  const [collapsed,setCollapsed] = useState(false);
+  const [addData,setAddData] = useState([]);
+
   const i18n = locale[lang.toLowerCase()];
   const updateData = data.filter(d => !!d).map(d => {
     const updater = changedData.find(s => d[rowKey] === s[rowKey]);
@@ -332,19 +347,7 @@ const EditableTable = ({ form,
     return d;
   });
   const newData = changedData.filter(s => s.isNew);
-  const dataSource = newData.concat(updateData);
-  const [showSelector,setShowSelector] = useState(defaultShowSelecor);
-  const [editingKey,setEditingKey] = useState('');
-  const [filterVisible,setFilterVisible] = useState(false);
-  const [filter,setFilter] = useState({});
-  const [sorter,setSorter] = useState({});
-  const [pager,setPager] = useState({currentPage:1, pageSize});
-  const [selectedRowKeys,setSelectedRowKeys] = useState([]);
-  const [columnSeq,setColumnSeq] = useState(cols.map((c,idx) => ({...c,idx,visible:true})));
-  const [allColumnSeq,setAllColumnSeq] = useState([]);
-  const [columns,setColumns] = useState(allCols);
-  const [columnsPopVisible,setColumnsPopVisible] = useState(false);
-  const [collapsed,setCollapsed] = useState(false);
+  const dataSource = addData.concat(newData,updateData);
 
   const handleTableChange = (p, f, s) => {
     let current = pager.currentPage;
@@ -398,8 +401,7 @@ const EditableTable = ({ form,
     }else{
       newObj = { [rowKey]:key, isNew: true };
     }
-    const result = updateChangedData(changedData,newObj, rowKey);
-    onChangedDataUpdate(result);
+    setAddData([...addData,newObj]);
     setEditingKey(key);
   };
 
@@ -421,7 +423,12 @@ const EditableTable = ({ form,
           updateRow[key] = updateRow[key].format(dateFormat);
         }
       }
-      const result = updateChangedData(changedData,{ [rowKey]: record[rowKey], ...updateRow, isUpdate: true }, rowKey);
+      const updateData = changedData;
+      if(record.isNew && !record.isUpdate){
+        updateData.push(record);
+        setAddData([]);
+      }
+      const result = updateChangedData(updateData,{ [rowKey]: record[rowKey], ...updateRow, isUpdate: true }, rowKey);
       onChangedDataUpdate(result);
       setEditingKey('');
     });
@@ -499,6 +506,7 @@ const EditableTable = ({ form,
   useEffect(()=>{
     setColumns(getColumns());
   },[editingKey,changedData,columnSeq]);
+  useEffect(()=> setPager({currentPage,pageSize}), [currentPage,pageSize]);
 
   const footer = () => (
     <Row>
@@ -689,4 +697,22 @@ const EditableTable = ({ form,
   );
 };
 
-export default Form.create()(EditableTable)
+const ETableHOC = (ETableComponent) => {
+  return class extends Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+        currentPage: 1
+      };
+      this.resetTable = () => {
+        this.setState({currentPage:0});
+        this.setState({currentPage:1});
+      }
+    }
+    render(){
+      return <ETableComponent {...this.props} currentPage={this.state.currentPage} />;
+    }
+  }
+};
+
+export default ETableHOC(Form.create()(EditableTable));

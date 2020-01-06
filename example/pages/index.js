@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState,useRef } from "react";
 import EditableTable from '../../dist';
 import { Button, Checkbox, Tooltip } from 'antd';
 import styles from './index.css';
@@ -138,8 +138,10 @@ export default function() {
   const [showSelector,setShowSelector] = useState(false);
   const [multiSelect,setMultiSelect] = useState(false);
   const [showTopPager,setShowTopPager] = useState(true);
+  const [currentPage,setCurrentPage] = useState(1);
   const [showBottomPager,setShowBottomPager] = useState(false);
   const [loading,setLoading] = useState(true);
+  const tableRef = useRef();
   const demoButtons = <>
     <Button size="small" style={{marginRight:8}}>按钮一</Button>
     <Button size="small">按钮二</Button>
@@ -149,7 +151,9 @@ export default function() {
   const fetch = (pager,filter,sorter) => {
     console.log('onFetch',pager,filter,sorter);
     setLoading(true);
-    setTimeout(()=> setLoading(false), 500 );
+    setTimeout(()=> {
+      setLoading(false);
+    }, 500 );
   };
   return (
     <div className={styles.root} >
@@ -163,6 +167,7 @@ export default function() {
         <Button type="primary" onClick={()=>{console.log('onSave',changedData);}}>保存</Button>
       </div>
       <EditableTable
+        ref={tableRef}
         bordered={true}
         rowKey="id"
         title="测试列表"
@@ -170,6 +175,7 @@ export default function() {
         loading={loading}
         data={data}
         changedData={changedData}
+        currentPage={currentPage}
         pageSize={10}
         total={100}
         cols={cols}
