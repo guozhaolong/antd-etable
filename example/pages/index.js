@@ -4,9 +4,9 @@ import { Button, Checkbox, Tooltip } from 'antd';
 import styles from './index.css';
 
 const data = [
-  {id:1,name:'测试1',title:'哈哈',status:0,test1:'111',test2:'222',test3:'aaa',test4:'bbb',desc:'描述1描述1描述1描述1描述1描述1描述1描述1描述1描述1描述1',type:0,created_time:'2019-5-2'},
-  {id:2,name:'测试2',title:'呵呵',status:1,test1:'333',test2:'444',test3:'ccc',test4:'ddd',desc:'描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2',type:1,created_time:'2019-5-3'},
-  {id:3,name:'测试3',title:'嘻嘻',status:2,test1:'555',test2:'666',test3:'eee',test4:'fff',desc:'描述3描述3描述3描述3描述3描述3描述3描述3描述3描述3描述3',type:0,created_time:'2019-5-4'}
+  {id:1,obj1:{a:1,b:2},name:'测试1',title:'哈哈',status:0,test1:'111',test2:'222',test3:'aaa',test4:'bbb',desc:'描述1描述1描述1描述1描述1描述1描述1描述1描述1描述1描述1',type:0,created_time:'2019-5-2'},
+  {id:2,obj1:{a:3,b:4},name:'测试2',title:'呵呵',status:1,test1:'333',test2:'444',test3:'ccc',test4:'ddd',desc:'描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2',type:1,created_time:'2019-5-3'},
+  {id:3,obj1:{a:5,b:6},name:'测试3',title:'嘻嘻',status:2,test1:'555',test2:'666',test3:'eee',test4:'fff',desc:'描述3描述3描述3描述3描述3描述3描述3描述3描述3描述3描述3',type:0,created_time:'2019-5-4'}
 ];
 const type = ['类型一','类型二'];
 const status = ['正常','异常','停止'];
@@ -15,6 +15,12 @@ const cols = [
     title: 'ID',
     dataIndex: 'id',
     editable:false,
+    width: 120,
+  },
+  {
+    title: '子属性',
+    dataIndex: 'obj1.a',
+    editable:true,
     width: 120,
   },
   {

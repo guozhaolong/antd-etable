@@ -80,11 +80,12 @@ function updateChangedData(changedData, item, rowKey = 'id'){
   return result;
 }
 function exportCSV(payload){
-  if (payload && payload.data.length > 0) {
-    let str = payload.header.map(h => h.title).join(',')+"\n";
-    str += payload.data.map(d => payload.header.map(h => d[h.dataIndex]).join(',')).join("\n");
+  const { name,header,data } = payload;
+  if (payload && data.length > 0) {
+    let str = header.map(h => h.title).join(',')+"\n";
+    str += data.map(d => header.map(h => _.get(d,[h.dataIndex])).join(',')).join("\n");
     const blob = new Blob(["\ufeff"+str], { type: 'text/csv;charset=utf-8;' });
-    const filename = `${payload.name}.csv`;
+    const filename = `${name}.csv`;
     let link = document.createElement('a');
     if (link.download !== undefined) {
       var url = URL.createObjectURL(blob);
@@ -100,6 +101,34 @@ function exportCSV(payload){
 
 function flatCols(columns){
   return columns.flatMap(col => ('children' in col ? flatCols(col.children) : col));
+}
+
+function initChildCols(col,idx,editingKey,rowKey){
+  if(col.children) {
+    return {
+      ...col,
+      children: col.children.map((child,i) => {
+        return initChildCols(child,idx+''+i,editingKey,rowKey)
+      })
+    }
+  } else if(!col.editable){
+    return col;
+  } else {
+    return {
+      ...col,
+      onCell: record => ({
+        record,
+        editor: col.editor,
+        editing: record[rowKey] === editingKey,
+        dataIndex: col.dataIndex,
+        title: col.title,
+      }),
+      onHeaderCell: col => ({
+        width: col.width,
+        index: idx,
+      }),
+    }
+  }
 }
 
 function isFixedHeader(children){
@@ -130,6 +159,42 @@ const EditableHWrapper = ({className,children}) => {
   )
 };
 
+const getFilterInput = (editor,value,onChange,onSearch) => {
+  const { type = 'text', options = [] } = editor;
+  switch (type) {
+    case 'number':
+      return <InputNumber value={value}
+                          onChange={(value)=>onChange(value)}
+                          onKeyPress={(e)=> e.nativeEvent.key === 'Enter' ? onSearch({currentPage:1}) : null} />;
+    case 'select':
+      return (
+        <Select style={{ width: '100%' }} value={value} onChange={(value)=>onChange(value)} >
+          {options.map(o => (
+            <Select.Option key={o.key} value={o.key}>
+              {o.value}
+            </Select.Option>
+          ))}
+        </Select>
+      );
+    case 'datetime':
+      return <RangePicker style={{width:'100%'}}
+                          showTime
+                          format={dateFormat}
+                          value={value}
+                          onChange={(dates)=>onChange(dates)} />;
+    case 'checkbox':
+      return <Checkbox checked={value}
+                       onChange={(e)=>onChange(e.target.checked)} />;
+    case 'text':
+      return <Input value={value}
+                    onChange={(e)=>onChange(e.target.value.trim())}
+                    onKeyPress={(e)=> e.nativeEvent.key === 'Enter' ? onSearch({currentPage:1}) : null} />;
+    default:
+      return <Input value={value}
+                    onChange={(e)=>onChange(e.target.value.trim())}
+                    onKeyPress={(e)=> e.nativeEvent.key === 'Enter' ? onSearch({currentPage:1}) : null} />;
+  }
+};
 
 const ResizeableCell = props => {
   const { columns,setColumns } = useContext(EditableContext);
@@ -172,41 +237,30 @@ const EditableRow = props => {
   return <tr {...props} style={style} />;
 };
 
-const getFilterInput = (editor,value,onChange,onSearch) => {
-  const { type = 'text', options = [] } = editor;
-  switch (type) {
-    case 'number':
-      return <InputNumber value={value}
-                          onChange={(value)=>onChange(value)}
-                          onKeyPress={(e)=> e.nativeEvent.key === 'Enter' ? onSearch({currentPage:1}) : null} />;
-    case 'select':
-      return (
-        <Select style={{ width: '100%' }} value={value} onChange={(value)=>onChange(value)} >
-          {options.map(o => (
-            <Select.Option key={o.key} value={o.key}>
-              {o.value}
-            </Select.Option>
-          ))}
-        </Select>
-      );
-    case 'datetime':
-      return <RangePicker style={{width:'100%'}}
-                          showTime
-                          format={dateFormat}
-                          value={value}
-                          onChange={(dates)=>onChange(dates)} />;
-    case 'checkbox':
-      return <Checkbox checked={value}
-                       onChange={(e)=>onChange(e.target.checked)} />;
-    case 'text':
-      return <Input value={value}
-                    onChange={(e)=>onChange(e.target.value.trim())}
-                    onKeyPress={(e)=> e.nativeEvent.key === 'Enter' ? onSearch({currentPage:1}) : null} />;
-    default:
-      return <Input value={value}
-                    onChange={(e)=>onChange(e.target.value.trim())}
-                    onKeyPress={(e)=> e.nativeEvent.key === 'Enter' ? onSearch({currentPage:1}) : null} />;
+const EditableCell = ({editor = { type: 'text' }, editing, dataIndex, title, record, index, children, ...restProps}) => {
+  const { form } = useContext(EditableContext);
+  const rules = [];
+  if(editor.required){
+    rules.push({ required: editor.required, message: `${title}必填.` });
   }
+  if(editor.validator){
+    rules.push({validator: (rule,value,callback) => editor.validator(rule,value,callback,record)});
+  }
+  return (
+    <td {...restProps}>
+      {editing ? (
+        <Form.Item style={{ margin: '-12px -4px' }}>
+          {form.getFieldDecorator(dataIndex, {
+            rules: rules,
+            initialValue: editor.type === 'datetime' ? moment(_.get(record,dataIndex), dateFormat) : _.get(record,dataIndex),
+            valuePropName: editor.type === 'checkbox' ? 'checked' : 'value',
+          })(getInput(editor))}
+        </Form.Item>
+      ) : (
+        children
+      )}
+    </td>
+  );
 };
 
 const getInput = (editor) => {
@@ -233,32 +287,6 @@ const getInput = (editor) => {
     default:
       return <Input />;
   }
-};
-
-const EditableCell = ({editor = { type: 'text' }, editing, dataIndex, title, record, index, children, ...restProps}) => {
-  const { form } = useContext(EditableContext);
-  const rules = [];
-  if(editor.required){
-    rules.push({ required: editor.required, message: `${title}必填.` });
-  }
-  if(editor.validator){
-    rules.push({validator: (rule,value,callback) => editor.validator(rule,value,callback,record)});
-  }
-  return (
-    <td {...restProps}>
-      {editing ? (
-        <Form.Item style={{ margin: '-12px -4px' }}>
-          {form.getFieldDecorator(dataIndex, {
-            rules: rules,
-            initialValue: editor.type === 'datetime' ? moment(record[dataIndex], dateFormat) : record[dataIndex],
-            valuePropName: editor.type === 'checkbox' ? 'checked' : 'value',
-          })(getInput(editor))}
-        </Form.Item>
-      ) : (
-        children
-      )}
-    </td>
-  );
 };
 
 const defaultArr = [];
@@ -404,8 +432,7 @@ const EditableTable = ({ form,
     if(onDownload) {
       allData = onDownload(filter, sorter);
     }
-    const header = columnSeq.map(c => {if(c.dataIndex && c.visible) return {dataIndex: c.dataIndex,title: c.title}});
-    exportCSV({ name: 'table', header, data:allData })
+    exportCSV({ name: 'table', header: flatCols(columnSeq), data: allData })
   };
 
   const getColumns = () => {
@@ -430,9 +457,12 @@ const EditableTable = ({ form,
                   <Tooltip title={i18n['ok']}>
                     <Icon type="check" onClick={(e) => {handleEditOk(record);e.stopPropagation();}} style={{ marginRight: 8 }}/>
                   </Tooltip>
-                  <Tooltip title={i18n['cancel']}>
-                    <Icon type="close" onClick={(e) => {setEditingKey('');e.stopPropagation();}}/>
-                  </Tooltip>
+                  {
+                    (!record.isNew || record.isUpdate) &&
+                    <Tooltip title={i18n['cancel']}>
+                      <Icon type="close" onClick={(e) => {setEditingKey('');e.stopPropagation();}}/>
+                    </Tooltip>
+                  }
                 </>
               ) : (
                 <a disabled={editingKey !== ''} onClick={(e) => {setEditingKey(record[rowKey]);e.stopPropagation();}}>
@@ -456,25 +486,7 @@ const EditableTable = ({ form,
         },
       });
     }
-    return cols1.map((col,idx) => {
-      if (!col.editable) {
-        return col;
-      }
-      return {
-        ...col,
-        onCell: record => ({
-          record,
-          editor: col.editor,
-          editing: record[rowKey] === editingKey,
-          dataIndex: col.dataIndex,
-          title: col.title,
-        }),
-        onHeaderCell: col => ({
-          width: col.width,
-          index: idx,
-        }),
-      };
-    });
+    return cols1.map((col,idx) => initChildCols(col,idx,editingKey,rowKey));
   };
   useEffect(()=>{
     setColumnSeq(cols.map((c,idx) => ({...c,idx,visible:true})));
