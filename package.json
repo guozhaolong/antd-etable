@@ -31,10 +31,10 @@
     "moment": "^2.24.0"
   },
   "devDependencies": {
-    "antd": "^3.26.6",
     "father": "^3.0.0-alpha.1",
     "lodash": "^4.17.11",
-    "umi": "^2.12.9"
+    "umi": "^2.12.9",
+    "webpack": "^4.42.0"
   },
   "license": "MIT",
   "bugs": {
