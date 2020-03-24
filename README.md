@@ -128,6 +128,7 @@ export default function() {
 | showBottomPager | 是否显示底部分页器 | Boolean | false |
 | buttons | 自定义操作按钮组 | Component | 无 |
 | style | 样式 | Object | null |
+| expandedRowRender | 展开行时的渲染内容 | ReactNode | null |
 
 ###### 事件
 | 名称 | 描述 | 参数 | 返回值 |
