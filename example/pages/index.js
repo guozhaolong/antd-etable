@@ -1,6 +1,6 @@
 import React, { useState,useRef } from "react";
 import EditableTable from '../../dist';
-import { Button, Checkbox, Tooltip } from 'antd';
+import { Button, Checkbox, Input, Tooltip, Form } from 'antd';
 import styles from './index.css';
 
 const data = [
@@ -19,7 +19,7 @@ const cols = [
   },
   {
     title: '子属性',
-    dataIndex: 'obj1.a',
+    dataIndex: ['obj1','a'],
     editable:true,
     width: 120,
   },
@@ -192,6 +192,7 @@ export default function() {
         onChangedDataUpdate={(d)=>{setChangedData(d)}}
         onAdd={()=>{console.log('onAdd');return {}}}
         onSelectRow={(rows)=>console.log('onSelectRow',rows)}
+        expandedRowRender={ record => (<><Form.Item name="desc"><Input /></Form.Item></>)}
       />
     </div>
   );
