@@ -73,7 +73,7 @@ interface ETableColEditorProps {
 interface ETableColProps<T> extends ColumnType<T> {
   editable?: boolean;
   editor?: ETableColEditorProps;
-  children: ETableColProps<any>[];
+  children?: ETableColProps<any>[];
 }
 
 const { RangePicker } = DatePicker;
@@ -154,7 +154,7 @@ function exportCSV(payload) {
 }
 
 function flatCols(columns: ETableColProps<any>[]) {
-  return columns.flatMap(col => ('children' in col ? flatCols(col.children) : col));
+  return columns.flatMap(col => ('children' in col ? flatCols(col.children!) : col));
 }
 
 function initChildCols(col: ETableColProps<any>, idx: string | number, editingKey: string, rowKey: string) {
@@ -320,7 +320,7 @@ interface EditableCellProps {
   index?: number;
 }
 
-const EditableCell: React.FC<EditableCellProps> = ({ editor = { type: 'text' }, editing, dataIndex, title, record, index, children, ...restProps }) => {
+const EditableCell: React.FC<EditableCellProps> = ({ editor = { type: 'text' }, editing, dataIndex = 'null', title, record, index, children, ...restProps }) => {
   const rules: any[] = [];
   if (editor.required) {
     rules.push({ required: editor.required, message: `${title}必填.` });
