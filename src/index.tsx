@@ -314,13 +314,13 @@ const EditableRow: React.FC<PropsWithChildren<any>> = props => {
 interface EditableCellProps {
   editor?: ETableColEditorProps;
   editing?: boolean;
-  dataIndex?: string;
+  dataIndex?: string | string[];
   title?: string;
   record?: any;
   index?: number;
 }
 
-const EditableCell: React.FC<EditableCellProps> = ({ editor = { type: 'text' }, editing, dataIndex = 'null', title, record, index, children, ...restProps }) => {
+const EditableCell: React.FC<EditableCellProps> = ({ editor = { type: 'text' }, editing, dataIndex, title, record, index, children, ...restProps }) => {
   const rules: any[] = [];
   if (editor.required) {
     rules.push({ required: editor.required, message: `${title}必填.` });
