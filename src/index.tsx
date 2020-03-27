@@ -89,6 +89,7 @@ interface EditableContextProps {
   columns?: ETableColProps<any>[];
   setColumns?: (cols: ETableColProps<any>[]) => void;
   handleTableChange?: (p?: any, f?: any, s?: any) => void;
+  expandedRowRender?: (record) => React.ReactNode;
 }
 
 const EditableContext = React.createContext<EditableContextProps>({});
@@ -203,13 +204,14 @@ function setFormValue(form:FormInstance,record:any,columns:ETableColProps<any>[]
 }
 
 const EditableHWrapper: React.FC<PropsWithChildren<any>> = ({ className, children }) => {
-  const { filter, filterVisible, setFilter, columns, handleTableChange, showSelector } = useContext(EditableContext);
+  const { filter, filterVisible, setFilter, columns, handleTableChange, showSelector,expandedRowRender } = useContext(EditableContext);
   const flatColumns = useMemo(() => flatCols(columns!), [columns]);
   return (
     <thead className={className}>
     {children}
     {!isFixedHeader(children) && filterVisible && (
       <tr className={styles.antETableFilter}>
+        {expandedRowRender && <th key={`expandedRow`}/>}
         {showSelector && <th key={`filterSelector`}/>}
         {flatColumns.map((col, idx) => {
           const { editor = {}, align = 'left' } = col;
@@ -221,7 +223,7 @@ const EditableHWrapper: React.FC<PropsWithChildren<any>> = ({ className, childre
               }), handleTableChange)}
             </th>;
           else
-            return undefined;
+            return <th />;
         }).filter(a => a !== undefined)}
       </tr>
     )}
@@ -780,6 +782,7 @@ const EditableTable: React.FC<ETableProps> = ({
       columns,
       setColumns,
       handleTableChange,
+      expandedRowRender,
     }}>
       <div className={styles.antETable} style={style}>
         <div className={styles.antETableHeader}>
