@@ -529,13 +529,18 @@ const EditableTable: React.FC<ETableProps> = ({
     } else {
       newObj = { [rowKey]: key, isNew: true };
     }
+    form.resetFields();
     setAddData([...addData, newObj]);
     setEditingKey(key);
   };
 
   const handleRemove = item => {
-    const result = updateChangedData(changedData, { ...item, isDelete: true }, rowKey);
-    onChangedDataUpdate(result);
+    if(item.isNew && !item.isUpdate){
+      setAddData(addData.filter(d => d[rowKey] !== item[rowKey]));
+    }else {
+      const result = updateChangedData(changedData, { ...item, isDelete: true }, rowKey);
+      onChangedDataUpdate(result);
+    }
     if (item.isNew)
       setEditingKey('');
   };
