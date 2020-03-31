@@ -22,6 +22,9 @@ const cols = [
     dataIndex: ['obj1','a'],
     editable:true,
     width: 120,
+    editor: {
+      type:'number'
+    }
   },
   {
     title: '名称',
