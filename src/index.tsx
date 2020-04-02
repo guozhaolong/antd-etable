@@ -123,7 +123,7 @@ function updateChangedData(changedData: any[], item: any, rowKey: string = 'id')
     if (idx > -1) {
       result = changedData.map(d => {
         if (item[rowKey] === d[rowKey]) {
-          return { ...d, ...item };
+          return _.merge(d,item);
         }
         return d;
       });
@@ -465,12 +465,13 @@ const EditableTable: React.FC<ETableProps> = ({
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [addData, setAddData] = useState<any[]>([]);
   const [expandedRowKeys,setExpandedRowKeys]  = useState<string[]>([]);
+  const [expandedRow,setExpandedRow] = useState<any>(null);
 
   const i18n = locale[lang.toLowerCase()];
   const updateData = data.filter(d => !!d).map(d => {
     const updater = changedData.find(s => d[rowKey] === s[rowKey]);
     if (updater) {
-      return { ...d, ...updater };
+      return _.merge(d,updater);
     }
     return d;
   });
@@ -574,6 +575,12 @@ const EditableTable: React.FC<ETableProps> = ({
     exportCSV({ name: 'table', header: flatCols(columnSeq), data: allData });
   };
 
+  const handleFormChange = (_values) => {
+    if(editingKey === "" && expandedRow){
+      handleEditOk(expandedRow);
+    }
+  };
+
   const getColumns = () => {
     let cols1 = columnSeq.map(c => {
       if (c.visible) {
@@ -660,6 +667,7 @@ const EditableTable: React.FC<ETableProps> = ({
   let expandable:any = useMemo(()=> {
     if(expandedRowRender){
       return {
+        rowExpandable: () => editingKey === '',
         expandedRowRender,
         expandedRowKeys,
         expandIcon: ({ expanded, onExpand, record }) =>
@@ -671,8 +679,10 @@ const EditableTable: React.FC<ETableProps> = ({
         onExpand:(expanded, record) => {
           if(expanded){
             setExpandedRowKeys([record[rowKey]]);
+            setExpandedRow(record);
           } else {
             setExpandedRowKeys([]);
+            setExpandedRow(null);
           }
         },
       }
@@ -864,7 +874,7 @@ const EditableTable: React.FC<ETableProps> = ({
           </div>
         </div>
         {!collapsed &&
-        <Form form={form}>
+        <Form form={form} onValuesChange={handleFormChange}>
           <Table
             locale={{ emptyText: <Empty description={i18n['empty']}/> }}
             bordered={bordered}
