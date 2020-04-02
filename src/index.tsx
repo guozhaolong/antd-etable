@@ -217,9 +217,9 @@ const EditableHWrapper: React.FC<PropsWithChildren<any>> = ({ className, childre
           const { editor = {}, align = 'left' } = col;
           if (col.dataIndex)
             return <th key={`filter${idx}`} style={{ padding: 5, textAlign: align }}>
-              {getFilterInput(editor, filter[col.dataIndex], value => {
+              {getFilterInput(editor, _.get(filter,col.dataIndex), value => {
                 if(_.isArray(col.dataIndex)){
-                  setFilter!(_.merge(filter,_.set({},col.dataIndex.join('.'),value)));
+                  setFilter!(_.merge({},filter,_.set({},col.dataIndex,value)));
                 }else {
                   setFilter!({ ...filter, [col.dataIndex]: value, })
                 }
