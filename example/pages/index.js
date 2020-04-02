@@ -1,6 +1,6 @@
 import React, { useState,useRef } from "react";
 import EditableTable from '../../dist';
-import { Button, Checkbox, Input, Tooltip, Form } from 'antd';
+import { Button, Checkbox, Input, Tooltip, Form, Row,Col } from 'antd';
 import styles from './index.css';
 
 const data = [
@@ -195,7 +195,32 @@ export default function() {
         onChangedDataUpdate={(d)=>{setChangedData(d)}}
         onAdd={()=>{console.log('onAdd');return {}}}
         onSelectRow={(rows)=>console.log('onSelectRow',rows)}
-        expandedRowRender={ record => (<><Form.Item name="desc"><Input /></Form.Item></>)}
+        expandedRowRender={ record => (
+          <>
+            <Row gutter={16}>
+              <Col span={8}>
+                <Form.Item name="name" label="名称"><Input /></Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item name="created_time" label="创建时间"><Input /></Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item name={['obj1','b']} label="子属性2"><Input /></Form.Item>
+              </Col>
+            </Row>
+            <Row gutter={16}>
+              <Col span={8}>
+                <Form.Item name="desc" label="描述"><Input.TextArea /></Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item name="title" label="标题"><Input /></Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item name="status" label="状态"><Input /></Form.Item>
+              </Col>
+            </Row>
+          </>
+        )}
       />
     </div>
   );
