@@ -129,6 +129,7 @@ export default function() {
 | buttons | 自定义操作按钮组 | Component | 无 |
 | style | 样式 | Object | null |
 | expandedRowRender | 展开行时的渲染内容 | ReactNode | null |
+| expandedFirstRow | 默认展开第一行 | Boolean | false |
 
 ###### 事件
 | 名称 | 描述 | 参数 | 返回值 |
@@ -140,6 +141,11 @@ export default function() {
 | [onChangedDataUpdate](#onchangeddataupdate) | 更新数据变化时触发 | arr | 无 |
 | [onSelectRow](#onselectrow) | 每页记录数 | rows | 无 |
 | [onDownload](#ondownload) | 每页记录数 | filter,sorter | 无 |
+
+###### 方法
+| 名称 | 描述 | 参数 | 返回值 |
+|:---|:---|:---:|:---:|
+| resetTable | 重置表格页码 | 无 | 无 |
 
 ## Config
 ##### changedData

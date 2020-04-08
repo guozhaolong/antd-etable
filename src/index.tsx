@@ -410,6 +410,7 @@ export interface ETableProps {
   onDownload?: (...args: any[]) => any;
   onSelectRow?: (...args: any[]) => void;
   expandedRowRender?: (record) => React.ReactNode;
+  expandedFirstRow?: boolean;
 }
 
 const EditableTable: React.FC<ETableProps> = ({
@@ -448,6 +449,7 @@ const EditableTable: React.FC<ETableProps> = ({
                                                 onSelectRow = () => {
                                                 },
                                                 expandedRowRender,
+                                                expandedFirstRow = false,
                                                 ...rest
                                               }) => {
   const [form] = Form.useForm();
@@ -659,12 +661,17 @@ const EditableTable: React.FC<ETableProps> = ({
       setAllColumnSeq(allCols);
     }
   }, [cols]);
-  useEffect(() => {
-    setColumns(getColumns());
-  }, [editingKey, changedData, columnSeq]);
+  useEffect(() => setColumns(getColumns()), [editingKey, changedData, columnSeq]);
   useEffect(() => setPager({ currentPage, pageSize }), [currentPage, pageSize]);
+  useEffect(()=> {
+    if(expandedFirstRow && data && data.length > 0){
+      setExpandedRowKeys([data[0][rowKey]]);
+      setExpandedRow(data[0]);
+      setFormValue(form,data[0],columns);
+    }
+  },[data]);
 
-  let expandable:any = useMemo(()=> {
+  const expandable:any = useMemo(()=> {
     if(expandedRowRender){
       return {
         rowExpandable: () => editingKey === '',

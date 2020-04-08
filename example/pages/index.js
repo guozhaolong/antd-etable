@@ -150,7 +150,7 @@ export default function() {
     <Button size="small">按钮二</Button>
   </>;
   const [buttons,setButtons] = useState(demoButtons);
-  setTimeout(()=> setLoading(false), 500 );
+  setTimeout(()=> { setLoading(false); }, 500 );
   const fetch = (pager,filter,sorter) => {
     console.log('onFetch',pager,filter,sorter);
     setLoading(true);
