@@ -409,6 +409,7 @@ export interface ETableProps {
   onChangedDataUpdate?: (...args: any[]) => void;
   onDownload?: (...args: any[]) => any;
   onSelectRow?: (...args: any[]) => void;
+  onEditRowChange?: (...args: any[]) => void;
   expandedRowRender?: (record) => React.ReactNode;
   expandedFirstRow?: boolean;
 }
@@ -441,13 +442,11 @@ const EditableTable: React.FC<ETableProps> = ({
                                                 canEdit = () => true,
                                                 canRemove = () => true,
                                                 onAdd = () => ({}),
-                                                onFetch = () => {
-                                                },
-                                                onChangedDataUpdate = () => {
-                                                },
+                                                onFetch = () => {},
+                                                onChangedDataUpdate = () => {},
                                                 onDownload,
-                                                onSelectRow = () => {
-                                                },
+                                                onSelectRow = () => {},
+                                                onEditRowChange = () => {},
                                                 expandedRowRender,
                                                 expandedFirstRow = false,
                                                 ...rest
@@ -577,7 +576,8 @@ const EditableTable: React.FC<ETableProps> = ({
     exportCSV({ name: 'table', header: flatCols(columnSeq), data: allData });
   };
 
-  const handleFormChange = (_values) => {
+  const handleFormChange = (values) => {
+    onEditRowChange(form,editingKey === "" && expandedRow ? expandedRow[rowKey]:editingKey,values);
     if(editingKey === "" && expandedRow){
       handleEditOk(expandedRow);
     }
@@ -623,6 +623,8 @@ const EditableTable: React.FC<ETableProps> = ({
                   if (editingKey === '') {
                     setFormValue(form,record,columns);
                     setEditingKey(record[rowKey]);
+                    setExpandedRowKeys([record[rowKey]]);
+                    setExpandedRow(record);
                   }
                   e.stopPropagation();
                 }}>
@@ -674,17 +676,20 @@ const EditableTable: React.FC<ETableProps> = ({
   const expandable:any = useMemo(()=> {
     if(expandedRowRender){
       return {
-        rowExpandable: () => editingKey === '',
+        rowExpandable: () => editingKey === '' || expandedRowKeys.find(k=> k === editingKey),
         expandedRowRender,
         expandedRowKeys,
         expandIcon: ({ expanded, onExpand, record }) =>
           expanded ? (
             <MinusCircleTwoTone onClick={e => onExpand(record, e)} />
           ) : (
-            <PlusCircleTwoTone onClick={e => {onExpand(record, e);setFormValue(form,record,columns);}} />
+            <PlusCircleTwoTone onClick={e => onExpand(record, e)} />
           ),
         onExpand:(expanded, record) => {
+          if(editingKey !== '' && record[rowKey] !== editingKey)
+            return;
           if(expanded){
+            setFormValue(form,record,columns);
             setExpandedRowKeys([record[rowKey]]);
             setExpandedRow(record);
           } else {
