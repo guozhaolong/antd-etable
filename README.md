@@ -141,7 +141,6 @@ export default function() {
 | [onChangedDataUpdate](#onchangeddataupdate) | 更新数据变化时触发 | arr | 无 |
 | [onSelectRow](#onselectrow) | 每页记录数 | rows | 无 |
 | [onDownload](#ondownload) | 每页记录数 | filter,sorter | 无 |
-| onEditRowChange | 编辑每行数据时触发 | form,id,values | 无 |
 
 ###### 方法
 | 名称 | 描述 | 参数 | 返回值 |

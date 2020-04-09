@@ -409,7 +409,6 @@ export interface ETableProps {
   onChangedDataUpdate?: (...args: any[]) => void;
   onDownload?: (...args: any[]) => any;
   onSelectRow?: (...args: any[]) => void;
-  onEditRowChange?: (...args: any[]) => void;
   expandedRowRender?: (record) => React.ReactNode;
   expandedFirstRow?: boolean;
 }
@@ -446,7 +445,6 @@ const EditableTable: React.FC<ETableProps> = ({
                                                 onChangedDataUpdate = () => {},
                                                 onDownload,
                                                 onSelectRow = () => {},
-                                                onEditRowChange = () => {},
                                                 expandedRowRender,
                                                 expandedFirstRow = false,
                                                 ...rest
@@ -549,12 +547,13 @@ const EditableTable: React.FC<ETableProps> = ({
 
   const handleEditOk = record => {
     form.validateFields().then(row => {
-      const updateRow = _.pickBy(row, value => !_.isUndefined(value));
+      let updateRow = _.pickBy(row, (value) => !_.isUndefined(value));
       for (let key in updateRow) {
         if (moment.isMoment(updateRow[key])) {
           updateRow[key] = updateRow[key].format(dateFormat);
         }
       }
+      updateRow = _.pickBy(updateRow, (_value,key) => !_.isEqual(updateRow[key],record[key]) && !_.isMatch(record[key],updateRow[key]));
       const updateData = changedData;
       if (record.isNew && !record.isUpdate) {
         updateData.push(record);
@@ -564,6 +563,9 @@ const EditableTable: React.FC<ETableProps> = ({
       onChangedDataUpdate(result);
       setEditingKey('');
     }).catch(errorInfo => {
+      if(errorInfo.outOfDate){
+        handleEditOk(record);
+      }
       return errorInfo;
     });
   };
@@ -576,8 +578,7 @@ const EditableTable: React.FC<ETableProps> = ({
     exportCSV({ name: 'table', header: flatCols(columnSeq), data: allData });
   };
 
-  const handleFormChange = (values) => {
-    onEditRowChange(form,editingKey === "" && expandedRow ? expandedRow[rowKey]:editingKey,values);
+  const handleFormChange = (_values) => {
     if(editingKey === "" && expandedRow){
       handleEditOk(expandedRow);
     }
