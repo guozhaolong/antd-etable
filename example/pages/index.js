@@ -1,6 +1,6 @@
 import React, { useState,useRef } from "react";
 import EditableTable from '../../dist';
-import { Button, Checkbox, Input, Tooltip, Form, Row,Col } from 'antd';
+import { Button, Checkbox, Input, Tooltip, Form, Row,Col,InputNumber } from 'antd';
 import styles from './index.css';
 
 const data = [
@@ -216,7 +216,7 @@ export default function() {
                 <Form.Item name="title" label="标题"><Input /></Form.Item>
               </Col>
               <Col span={8}>
-                <Form.Item name="status" label="状态"><Input /></Form.Item>
+                <Form.Item name="status" label="状态"><InputNumber /></Form.Item>
               </Col>
             </Row>
           </>

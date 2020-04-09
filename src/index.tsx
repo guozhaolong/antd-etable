@@ -553,7 +553,7 @@ const EditableTable: React.FC<ETableProps> = ({
           updateRow[key] = updateRow[key].format(dateFormat);
         }
       }
-      updateRow = _.pickBy(updateRow, (_value,key) => !_.isEqual(updateRow[key],record[key]) && !_.isMatch(record[key],updateRow[key]));
+      updateRow = _.pickBy(updateRow, (_value,key) => !_.isEqual(updateRow[key],record[key]) && !(_.isObject(updateRow[key]) && _.isMatch(record[key],updateRow[key])));
       const updateData = changedData;
       if (record.isNew && !record.isUpdate) {
         updateData.push(record);
