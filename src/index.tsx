@@ -671,6 +671,8 @@ const EditableTable: React.FC<ETableProps> = ({
       setExpandedRowKeys([data[0][rowKey]]);
       setExpandedRow(data[0]);
       setFormValue(form,data[0],columns);
+      setSelectedRowKeys([data[0][rowKey]]);
+      onSelectRow([data[0]]);
     }
   },[data]);
 

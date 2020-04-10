@@ -195,6 +195,7 @@ export default function() {
         onChangedDataUpdate={(d)=>{setChangedData(d)}}
         onAdd={()=>{console.log('onAdd');return {}}}
         onSelectRow={(rows)=>console.log('onSelectRow',rows)}
+        expandedFirstRow
         expandedRowRender={ record => (
           <>
             <Row gutter={16}>
