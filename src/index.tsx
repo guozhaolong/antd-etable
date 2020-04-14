@@ -17,6 +17,7 @@ import {
   Select,
   InputNumber,
   DatePicker,
+  TimePicker,
   Checkbox,
   Divider,
   Popover,
@@ -64,7 +65,7 @@ import {
 import { FormInstance } from 'antd/lib/form';
 
 interface ETableColEditorProps {
-  type?: 'select' | 'datetime' | 'text' | 'checkbox' | 'number';
+  type?: 'select' | 'datetime' | 'text' | 'checkbox' | 'number' | 'date' | 'time';
   required?: boolean;
   validator?: (...arg: any[]) => void;
   options?: any[];
@@ -257,6 +258,16 @@ const getFilterInput = (editor, value, onChange, onSearch) => {
                           format={dateFormat}
                           value={value}
                           onChange={(dates) => onChange(dates)}/>;
+    case 'date':
+      return <RangePicker style={{ width: '100%' }}
+                          format={'YYYY-MM-DD'}
+                          value={value}
+                          onChange={(dates) => onChange(dates)}/>;
+    case 'time':
+      return <TimePicker style={{ width: '100%' }}
+                          format={'HH:mm'}
+                          value={value}
+                          onChange={(dates) => onChange(dates)}/>;
     case 'checkbox':
       return <Checkbox checked={value}
                        onChange={(e) => onChange(e.target.checked)}/>;
@@ -366,6 +377,10 @@ const getInput = (editor: ETableColEditorProps) => {
       );
     case 'datetime':
       return <DatePicker showTime format={dateFormat}/>;
+    case 'date':
+      return <DatePicker format={'YYYY-MM-DD'}/>;
+    case 'time':
+      return <TimePicker format={'HH:mm'}/>;
     case 'checkbox':
       return <Checkbox/>;
     case 'text':
