@@ -120,6 +120,8 @@ export default function() {
 | pageSize | 每页记录数 | Number | 10 |
 | total | 记录总数 | Number | 0 |
 | multiSelect | 可多选 | Boolean | false |
+| showHeader | 是否显示顶栏 | Boolean | true |
+| showFooter | 是否显示底栏 | Boolean | true |
 | showToolbar | 是否显示顶部工具栏 | Boolean | true |
 | showSelector | 是否显示选择按钮 | Boolean | false |
 | showAddBtn | 是否显示添加按钮 | Boolean | true |

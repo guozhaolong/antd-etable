@@ -416,6 +416,8 @@ export interface ETableProps {
   total?: number;
   scroll?: any;
   multiSelect?: boolean;
+  showHeader?: boolean;
+  showFooter?: boolean;
   showToolbar?: boolean;
   showAddBtn?: boolean;
   showOpBtn?: boolean;
@@ -452,6 +454,8 @@ const EditableTable: React.FC<ETableProps> = ({
                                                 total = 0,
                                                 scroll = { x: null },
                                                 multiSelect = true,
+                                                showHeader = true,
+                                                showFooter = true,
                                                 showToolbar = true,
                                                 showAddBtn = true,
                                                 showOpBtn = true,
@@ -732,7 +736,8 @@ const EditableTable: React.FC<ETableProps> = ({
     <Row>
       <Col span={showSelectRecord ? 2 : 0} style={{ textAlign: 'left', whiteSpace: 'nowrap' }}>
         {showSelectRecord &&
-        <Checkbox onClick={(e) => setShowSelector((e.target as HTMLInputElement).checked)}>{i18n['select']}</Checkbox>}
+        <Checkbox
+          onClick={(e) => setShowSelector((e.target as HTMLInputElement).checked)}>{i18n['select']}</Checkbox>}
       </Col>
       <Col span={showSelectRecord ? 22 : 24}>
         {
@@ -741,7 +746,7 @@ const EditableTable: React.FC<ETableProps> = ({
               {!showBottomPager && <div/>}
               <div>
                 {showAddBtn && (
-                  <Button icon={<PlusOutlined />} size="small" onClick={handleAdd} style={{ marginRight: 8 }}>
+                  <Button icon={<PlusOutlined/>} size="small" onClick={handleAdd} style={{ marginRight: 8 }}>
                     {i18n['add']}
                   </Button>
                 )}
@@ -840,105 +845,109 @@ const EditableTable: React.FC<ETableProps> = ({
       expandedRowRender,
     }}>
       <div className={styles.antETable} style={style}>
-        <div className={styles.antETableHeader}>
-          <div className={styles.antETableTitleContainer}>
-            <div className={styles.antETableTitle}>{title}</div>
-            {title && <Divider type="vertical" style={{ marginTop: 7 }}/>}
-            <div className={styles.antETableToolbar}>
-              {showToolbar &&
-              <>
-                <Tooltip title={filterVisible ? i18n['filter.collapse'] : i18n['filter.expand']}>
-                  <>
-                    {filterVisible && <FilterFilled onClick={() => setFilterVisible(!filterVisible)}/>}
-                    {!filterVisible && <FilterOutlined onClick={() => setFilterVisible(!filterVisible)}/>}
-                  </>
-                </Tooltip>
-                <Tooltip title={i18n['filter.clear']}>
-                  <RestFilled style={{
-                    cursor: _.isEmpty(filter) ? 'default' : 'pointer',
-                    color: _.isEmpty(filter) ? '#ddd' : '#666',
-                  }}
-                              onClick={() => {
-                                if (!_.isEmpty(filter)) {
-                                  form.resetFields();
-                                  handleTableChange({ currentPage: 1 }, { clear: true });
-                                }
-                              }}/>
-                </Tooltip>
-                <Tooltip title={i18n['search']}>
-                  <SearchOutlined onClick={() => handleTableChange({ currentPage: 1 })}/>
-                </Tooltip>
-                <Tooltip title={i18n['columns']}>
-                  <Popover
-                    placement="bottom"
-                    content={columnsFilter}
-                    trigger="click"
-                    visible={columnsPopVisible}
-                    onVisibleChange={(visible) => setColumnsPopVisible(visible)}
-                  >
-                    <UnorderedListOutlined/>
-                  </Popover>
-                </Tooltip>
-              </>
-              }
-              {showTopPager && (
+        {
+          showHeader &&
+          <div className={styles.antETableHeader}>
+            <div className={styles.antETableTitleContainer}>
+              <div className={styles.antETableTitle}>{title}</div>
+              {title && <Divider type="vertical" style={{ marginTop: 7 }}/>}
+              <div className={styles.antETableToolbar}>
+                {showToolbar &&
                 <>
-                  {showToolbar && <Divider type="vertical" style={{ marginTop: 7 }}/>}
-                  <Pagination
-                    simple
-                    defaultCurrent={1}
-                    total={total}
-                    current={pager.currentPage}
-                    pageSize={pager.pageSize}
-                    onChange={(current, size) => handleTableChange({ currentPage: current, pageSize: size })}
-                    style={{ display: 'inline-block', marginRight: 4 }}
-                  />
-                  <div>{`${i18n['total.prefix']} ${total} ${i18n['total.suffix']}`}</div>
+                  <Tooltip title={filterVisible ? i18n['filter.collapse'] : i18n['filter.expand']}>
+                    <>
+                      {filterVisible && <FilterFilled onClick={() => setFilterVisible(!filterVisible)}/>}
+                      {!filterVisible && <FilterOutlined onClick={() => setFilterVisible(!filterVisible)}/>}
+                    </>
+                  </Tooltip>
+                  <Tooltip title={i18n['filter.clear']}>
+                    <RestFilled style={{
+                      cursor: _.isEmpty(filter) ? 'default' : 'pointer',
+                      color: _.isEmpty(filter) ? '#ddd' : '#666',
+                    }}
+                                onClick={() => {
+                                  if (!_.isEmpty(filter)) {
+                                    form.resetFields();
+                                    handleTableChange({ currentPage: 1 }, { clear: true });
+                                  }
+                                }}/>
+                  </Tooltip>
+                  <Tooltip title={i18n['search']}>
+                    <SearchOutlined onClick={() => handleTableChange({ currentPage: 1 })}/>
+                  </Tooltip>
+                  <Tooltip title={i18n['columns']}>
+                    <Popover
+                      placement="bottom"
+                      content={columnsFilter}
+                      trigger="click"
+                      visible={columnsPopVisible}
+                      onVisibleChange={(visible) => setColumnsPopVisible(visible)}
+                    >
+                      <UnorderedListOutlined/>
+                    </Popover>
+                  </Tooltip>
                 </>
-              )}
+                }
+                {showTopPager && (
+                  <>
+                    {showToolbar && <Divider type="vertical" style={{ marginTop: 7 }}/>}
+                    <Pagination
+                      simple
+                      defaultCurrent={1}
+                      total={total}
+                      current={pager.currentPage}
+                      pageSize={pager.pageSize}
+                      onChange={(current, size) => handleTableChange({ currentPage: current, pageSize: size })}
+                      style={{ display: 'inline-block', marginRight: 4 }}
+                    />
+                    <div>{`${i18n['total.prefix']} ${total} ${i18n['total.suffix']}`}</div>
+                  </>
+                )}
+              </div>
+            </div>
+            <div className={styles.antETableToolbarRight}>
+              <Tooltip title={i18n['download']}>
+                <DownloadOutlined onClick={() => handleDownload()}/>
+              </Tooltip>
+              <Tooltip title={i18n[collapsed ? 'expand' : 'collapse']}>
+                <>
+                  {collapsed && <ColumnHeightOutlined onClick={() => setCollapsed(!collapsed)}/>}
+                  {!collapsed && <VerticalAlignMiddleOutlined onClick={() => setCollapsed(!collapsed)}/>}
+                </>
+              </Tooltip>
             </div>
           </div>
-          <div className={styles.antETableToolbarRight}>
-            <Tooltip title={i18n['download']}>
-              <DownloadOutlined onClick={() => handleDownload()}/>
-            </Tooltip>
-            <Tooltip title={i18n[collapsed ? 'expand' : 'collapse']}>
-              <>
-                {collapsed && <ColumnHeightOutlined onClick={() => setCollapsed(!collapsed)}/>}
-                {!collapsed && <VerticalAlignMiddleOutlined onClick={() => setCollapsed(!collapsed)}/>}
-              </>
-            </Tooltip>
-          </div>
-        </div>
-        {!collapsed &&
-        <Form form={form} onValuesChange={handleFormChange}>
-          <Table
-            locale={{ emptyText: <Empty description={i18n['empty']}/> }}
-            bordered={bordered}
-            size="middle"
-            rowKey={rowKey}
-            rowSelection={rowSelection}
-            footer={footer}
-            pagination={false}
-            loading={loading}
-            components={components}
-            columns={columns}
-            dataSource={dataSource}
-            onChange={(p, f, s) => handleTableChange(p, f, s)}
-            onRow={record => ({
-              onClick: _event => {
-                if (!showSelector && record[rowKey] !== editingKey) {
-                  if (!selectedRowKeys.find(k => k === record[rowKey])) {
-                    setSelectedRowKeys([record[rowKey]]);
+        }
+        {
+          !collapsed &&
+          <Form form={form} onValuesChange={handleFormChange}>
+            <Table
+              locale={{ emptyText: <Empty description={i18n['empty']}/> }}
+              bordered={bordered}
+              size="middle"
+              rowKey={rowKey}
+              rowSelection={rowSelection}
+              footer={showFooter ? footer : undefined}
+              pagination={false}
+              loading={loading}
+              components={components}
+              columns={columns}
+              dataSource={dataSource}
+              onChange={(p, f, s) => handleTableChange(p, f, s)}
+              onRow={record => ({
+                onClick: _event => {
+                  if (!showSelector && record[rowKey] !== editingKey) {
+                    if (!selectedRowKeys.find(k => k === record[rowKey])) {
+                      setSelectedRowKeys([record[rowKey]]);
+                    }
+                    onSelectRow([record]);
                   }
-                  onSelectRow([record]);
-                }
-              },
-            })}
-            scroll={scroll}
-            expandable={expandable}
-            {...rest} />
-        </Form>
+                },
+              })}
+              scroll={scroll}
+              expandable={expandable}
+              {...rest} />
+          </Form>
         }
       </div>
     </EditableContext.Provider>

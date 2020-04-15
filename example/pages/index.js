@@ -143,6 +143,8 @@ export default function() {
   const [showTopPager,setShowTopPager] = useState(true);
   const [currentPage,setCurrentPage] = useState(1);
   const [showBottomPager,setShowBottomPager] = useState(false);
+  const [showHeader,setShowHeader] = useState(true);
+  const [showFooter,setShowFooter] = useState(true);
   const [loading,setLoading] = useState(true);
   const tableRef = useRef();
   const demoButtons = <>
@@ -167,6 +169,8 @@ export default function() {
         <Checkbox onChange={(e)=>setShowTopPager(e.target.checked)} checked={showTopPager}>显示顶部分页器</Checkbox>
         <Checkbox onChange={(e)=>setShowBottomPager(e.target.checked)} checked={showBottomPager}>显示底部分页器</Checkbox>
         <Checkbox onChange={(e)=>e.target.checked ? setButtons(demoButtons):setButtons(null)} checked={!!buttons}>显示底部自定义按钮</Checkbox>
+        <Checkbox onChange={(e)=>setShowHeader(e.target.checked)} checked={showHeader}>显示顶栏</Checkbox>
+        <Checkbox onChange={(e)=>setShowFooter(e.target.checked)} checked={showFooter}>显示底栏</Checkbox>
         <Button type="primary" onClick={()=>{console.log('onSave',changedData);}}>保存</Button>
       </div>
       <EditableTable
@@ -191,6 +195,8 @@ export default function() {
         showTopPager={showTopPager}
         showToolbar={showToolbar}
         showBottomPager={showBottomPager}
+        showHeader={showHeader}
+        showFooter={showFooter}
         onFetch={(pager,filter,sorter)=>fetch(pager,filter,sorter)}
         onChangedDataUpdate={(d)=>{setChangedData(d)}}
         onAdd={()=>{console.log('onAdd');return {}}}
