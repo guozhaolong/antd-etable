@@ -69,6 +69,7 @@ interface ETableColEditorProps {
   required?: boolean;
   validator?: (...arg: any[]) => void;
   options?: any[];
+  format?: string;
 }
 
 interface ETableColProps<T> extends ColumnType<T> {
@@ -94,7 +95,9 @@ interface EditableContextProps {
 }
 
 const EditableContext = React.createContext<EditableContextProps>({});
-const dateFormat = 'YYYY-MM-DD HH:mm:ss';
+const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
+const dateFormat = 'YYYY-MM-DD';
+const timeFormat = 'HH:mm';
 
 function updateChangedData(changedData: any[], item: any, rowKey: string = 'id'): any[] {
   let result: any[];
@@ -196,7 +199,11 @@ function setFormValue(form:FormInstance,record:any,columns:ETableColProps<any>[]
   _.keys(record).map(k => {
     const col:ETableColProps<any> = columns.find(c => c.dataIndex === k)!;
     if(col && col.editor && col.editor.type === 'datetime'){
+      tmp[k] = moment(record[k],dateTimeFormat);
+    }else if(col && col.editor && col.editor.type === 'date'){
       tmp[k] = moment(record[k],dateFormat);
+    }else if(col && col.editor && col.editor.type === 'time'){
+      tmp[k] = moment(record[k],timeFormat);
     }else{
       tmp[k] = record[k];
     }
@@ -236,7 +243,7 @@ const EditableHWrapper: React.FC<PropsWithChildren<any>> = ({ className, childre
 };
 
 const getFilterInput = (editor, value, onChange, onSearch) => {
-  const { type = 'text', options = [] } = editor;
+  const { type = 'text', options = [], format } = editor;
   switch (type) {
     case 'number':
       return <InputNumber value={value}
@@ -255,17 +262,17 @@ const getFilterInput = (editor, value, onChange, onSearch) => {
     case 'datetime':
       return <RangePicker style={{ width: '100%' }}
                           showTime
-                          format={dateFormat}
+                          format={format ? format :dateTimeFormat}
                           value={value}
                           onChange={(dates) => onChange(dates)}/>;
     case 'date':
       return <RangePicker style={{ width: '100%' }}
-                          format={'YYYY-MM-DD'}
+                          format={format ? format :dateFormat}
                           value={value}
                           onChange={(dates) => onChange(dates)}/>;
     case 'time':
       return <TimePicker style={{ width: '100%' }}
-                          format={'HH:mm'}
+                          format={format ? format :timeFormat}
                           value={value}
                           onChange={(dates) => onChange(dates)}/>;
     case 'checkbox':
@@ -361,7 +368,7 @@ const EditableCell: React.FC<EditableCellProps> = ({ editor = { type: 'text' }, 
 };
 
 const getInput = (editor: ETableColEditorProps) => {
-  const { type = 'text', options = [] } = editor;
+  const { type = 'text', options = [], format } = editor;
   switch (type) {
     case 'number':
       return <InputNumber/>;
@@ -376,11 +383,11 @@ const getInput = (editor: ETableColEditorProps) => {
         </Select>
       );
     case 'datetime':
-      return <DatePicker showTime format={dateFormat}/>;
+      return <DatePicker showTime format={format ? format : dateTimeFormat}/>;
     case 'date':
-      return <DatePicker format={'YYYY-MM-DD'}/>;
+      return <DatePicker format={format ? format : dateFormat}/>;
     case 'time':
-      return <TimePicker format={'HH:mm'}/>;
+      return <TimePicker format={format ? format : timeFormat}/>;
     case 'checkbox':
       return <Checkbox/>;
     case 'text':
@@ -565,7 +572,7 @@ const EditableTable: React.FC<ETableProps> = ({
       let updateRow = _.pickBy(row, (value) => !_.isUndefined(value));
       for (let key in updateRow) {
         if (moment.isMoment(updateRow[key])) {
-          updateRow[key] = updateRow[key].format(dateFormat);
+          updateRow[key] = updateRow[key].format(updateRow[key]._f);
         }
       }
       updateRow = _.pickBy(updateRow, (_value,key) => !_.isEqual(updateRow[key],record[key]) && !(_.isObject(updateRow[key]) && _.isMatch(record[key],updateRow[key])));
