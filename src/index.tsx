@@ -718,6 +718,10 @@ const EditableTable: React.FC<ETableProps> = ({
           if(editingKey !== '' && record[rowKey] !== editingKey)
             return;
           if(expanded){
+            if (!selectedRowKeys.find(k => k === record[rowKey])) {
+              setSelectedRowKeys([record[rowKey]]);
+            }
+            onSelectRow([record]);
             setFormValue(form,record,columns);
             setExpandedRowKeys([record[rowKey]]);
             setExpandedRow(record);
@@ -936,7 +940,7 @@ const EditableTable: React.FC<ETableProps> = ({
               onChange={(p, f, s) => handleTableChange(p, f, s)}
               onRow={record => ({
                 onClick: _event => {
-                  if (!showSelector && record[rowKey] !== editingKey) {
+                  if (!showSelector && record[rowKey] !== editingKey && !expandedRowRender) {
                     if (!selectedRowKeys.find(k => k === record[rowKey])) {
                       setSelectedRowKeys([record[rowKey]]);
                     }
