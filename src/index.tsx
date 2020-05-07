@@ -127,7 +127,7 @@ function updateChangedData(changedData: any[], item: any, rowKey: string = 'id')
     if (idx > -1) {
       result = changedData.map(d => {
         if (item[rowKey] === d[rowKey]) {
-          return _.merge(d,item);
+          return _.merge({},d,item);
         }
         return d;
       });
@@ -496,7 +496,7 @@ const EditableTable: React.FC<ETableProps> = ({
   const updateData = data.filter(d => !!d).map(d => {
     const updater = changedData.find(s => d[rowKey] === s[rowKey]);
     if (updater) {
-      return _.merge(d,updater);
+      return _.merge({},d,updater);
     }
     return d;
   });
