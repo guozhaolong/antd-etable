@@ -428,6 +428,8 @@ export interface ETableProps {
   buttons?: React.ReactElement,
   canEdit?: (...args: any[]) => boolean;
   canRemove?: (...args: any[]) => boolean;
+  beforeEdit?: (...args: any[]) => any;
+  afterEdit?: (...args: any[]) => any;
   onAdd?: (...args: any[]) => any;
   onFetch?: (...args: any[]) => void;
   onChangedDataUpdate?: (...args: any[]) => void;
@@ -466,6 +468,8 @@ const EditableTable: React.FC<ETableProps> = ({
                                                 buttons,
                                                 canEdit = () => true,
                                                 canRemove = () => true,
+                                                beforeEdit = () => ({}),
+                                                afterEdit = () => ({}),
                                                 onAdd = () => ({}),
                                                 onFetch = () => {},
                                                 onChangedDataUpdate = () => {},
@@ -585,6 +589,7 @@ const EditableTable: React.FC<ETableProps> = ({
         updateData.push(record);
         setAddData([]);
       }
+      afterEdit({ [rowKey]: record[rowKey], ...updateRow, isUpdate: true });
       const result = updateChangedData(updateData, { [rowKey]: record[rowKey], ...updateRow, isUpdate: true }, rowKey);
       onChangedDataUpdate(result);
       setEditingKey('');
@@ -648,6 +653,7 @@ const EditableTable: React.FC<ETableProps> = ({
               ) : (
                 <a onClick={(e) => {
                   if (editingKey === '') {
+                    beforeEdit(record);
                     setFormValue(form,record,columns);
                     setEditingKey(record[rowKey]);
                     setExpandedRowKeys([record[rowKey]]);

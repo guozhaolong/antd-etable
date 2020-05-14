@@ -138,6 +138,8 @@ export default function() {
 |:---|:---|:---:|:---:|
 | canEdit | 每行是否可编辑 | record | Boolean |
 | canRemove | 每行是否可删除 | record | Boolean |
+| beforeEdit | 编辑数据前触发 | 无 | 无 |
+| afterEdit | 编辑数据后触发 | 无 | 无 |
 | [onAdd](#onadd) | 新增数据的默认对象 | 无 | Object |
 | onFetch | 请求数据事件 | pager,filter,sorter | 无 |
 | [onChangedDataUpdate](#onchangeddataupdate) | 更新数据变化时触发 | arr | 无 |
