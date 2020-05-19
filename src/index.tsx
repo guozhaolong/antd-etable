@@ -73,7 +73,7 @@ interface ETableColEditorProps {
 }
 
 interface ETableColProps<T> extends ColumnType<T> {
-  editable?: boolean;
+  editable?: (...arg: any[]) => boolean | true | false;
   editor?: ETableColEditorProps;
   children?: ETableColProps<any>[];
 }
@@ -173,12 +173,18 @@ function initChildCols(col: ETableColProps<any>, idx: string | number, editingKe
   } else if (!col.editable) {
     return col;
   } else {
+    const isEditing = (record)=>{
+      if(!col.editable || _.isFunction(col.editable) && !col.editable(record))
+        return false;
+      else
+        return record[rowKey] === editingKey;
+    };
     return {
       ...col,
       onCell: record => ({
         record,
         editor: col.editor,
-        editing: record[rowKey] === editingKey,
+        editing: isEditing(record),
         dataIndex: col.dataIndex,
         title: col.title,
       }),
@@ -560,6 +566,7 @@ const EditableTable: React.FC<ETableProps> = ({
       newObj = { [rowKey]: key, isNew: true };
     }
     form.resetFields();
+    form.setFieldsValue(newObj);
     setAddData([...addData, newObj]);
     setEditingKey(key);
   };
@@ -586,6 +593,7 @@ const EditableTable: React.FC<ETableProps> = ({
       updateRow = _.pickBy(updateRow, (_value,key) => !_.isEqual(updateRow[key],record[key]) && !(_.isObject(updateRow[key]) && _.isMatch(record[key],updateRow[key])));
       const updateData = changedData;
       if (record.isNew && !record.isUpdate) {
+        record[rowKey] = row[rowKey];
         updateData.push(record);
         setAddData([]);
       }

@@ -1,7 +1,8 @@
 import React, { useState,useRef } from "react";
 import EditableTable from '../../dist';
-import { Button, Checkbox, Input, Tooltip, Form, Row,Col,InputNumber } from 'antd';
+import { Button, Checkbox, Input, Tooltip, Form, Row,Col,InputNumber,DatePicker } from 'antd';
 import styles from './index.css';
+import moment from 'moment';
 
 const data = [
   {id:1,obj1:{a:1,b:2},name:'测试1',title:'哈哈',status:0,test1:'111',test2:'222',test3:'aaa',test4:'bbb',desc:'描述1描述1描述1描述1描述1描述1描述1描述1描述1描述1描述1',type:0,created_time:'2019-05-02 00:00:00'},
@@ -14,7 +15,7 @@ const cols = [
   {
     title: 'ID',
     dataIndex: 'id',
-    editable:false,
+    editable:(record)=>(record.isNew && !record.isUpdate),
     width: 120,
   },
   {
@@ -199,7 +200,7 @@ export default function() {
         showFooter={showFooter}
         onFetch={(pager,filter,sorter)=>fetch(pager,filter,sorter)}
         onChangedDataUpdate={(d)=>{setChangedData(d)}}
-        onAdd={()=>{console.log('onAdd');return {}}}
+        onAdd={()=>{console.log('onAdd');return {id:'test'+new Date().getTime()}}}
         onSelectRow={(rows)=>console.log('onSelectRow',rows)}
         expandedFirstRow
         expandedRowRender={ record => (
@@ -209,7 +210,12 @@ export default function() {
                 <Form.Item name="name" label="名称" rules={[{required:true}]}><Input /></Form.Item>
               </Col>
               <Col span={8}>
-                <Form.Item name="created_time" label="创建时间"><Input /></Form.Item>
+                <Form.Item name="created_time"
+                           label="创建时间"
+                           getValueProps={(value)=>({value:moment(value)})}
+                           getValueFromEvent={(e)=> moment(e).format("YYYY-MM-DD HH:mm:ss")}>
+                  <DatePicker format="YYYY-MM-DD HH:mm:ss" />
+                </Form.Item>
               </Col>
               <Col span={8}>
                 <Form.Item name={['obj1','b']} label="子属性2"><Input /></Form.Item>
