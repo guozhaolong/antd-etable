@@ -59,8 +59,8 @@ import {
   ColumnHeightOutlined,
   VerticalAlignMiddleOutlined,
   PlusOutlined,
-  MinusCircleTwoTone,
-  PlusCircleTwoTone,
+  RightOutlined,
+  DownOutlined,
 } from '@ant-design/icons';
 import { FormInstance } from 'antd/lib/form';
 
@@ -329,7 +329,7 @@ const EditableRow: React.FC<PropsWithChildren<any>> = props => {
   const { changedData, selectedRowKeys, rowKey } = useContext(EditableContext);
   const key = props['data-row-key'];
   const isDelete = changedData!.find(d => key === d[rowKey!] && d.isDelete);
-  let style = isDelete ? { textDecoration: 'line-through', ...props.style } : props.style;
+  let style = props.style;
   const selected = selectedRowKeys!.find(i => key === i);
   if (selected) {
     style = {
@@ -337,7 +337,17 @@ const EditableRow: React.FC<PropsWithChildren<any>> = props => {
       fontWeight: 800,
     };
   }
-  return <tr {...props} style={style}/>;
+  const deleteStyle:any = {
+    borderTop: '1px solid #000',
+    position: 'absolute',
+    height: 1,
+    width: '100%',
+    marginTop: -24,
+  };
+  return <>
+    <tr {...props} style={style} />
+    { isDelete && <tr style={deleteStyle}/>}
+  </>;
 };
 
 interface EditableCellProps {
@@ -443,6 +453,8 @@ export interface ETableProps {
   onSelectRow?: (...args: any[]) => void;
   expandedRowRender?: (record) => React.ReactNode;
   expandedFirstRow?: boolean;
+  editOnSelected?: boolean;
+  onExpandedRow?: (...args: any[]) => void;
 }
 
 const EditableTable: React.FC<ETableProps> = ({
@@ -483,6 +495,8 @@ const EditableTable: React.FC<ETableProps> = ({
                                                 onSelectRow = () => {},
                                                 expandedRowRender,
                                                 expandedFirstRow = false,
+                                                editOnSelected = false,
+                                                onExpandedRow = () => {},
                                                 ...rest
                                               }) => {
   const [form] = Form.useForm();
@@ -554,21 +568,25 @@ const EditableTable: React.FC<ETableProps> = ({
   }
 
   const handleAdd = () => {
-    let newObj = onAdd();
-    let key = _.uniqueId(newRowKeyPrefix);
-    if (newObj) {
-      newObj.isNew = true;
-      if (newObj[rowKey])
-        key = newObj[rowKey];
-      else
-        newObj[rowKey] = key;
-    } else {
-      newObj = { [rowKey]: key, isNew: true };
+    if(editingKey === ""){
+      let newObj = onAdd();
+      let key = _.uniqueId(newRowKeyPrefix);
+      if (newObj) {
+        newObj.isNew = true;
+        if (newObj[rowKey])
+          key = newObj[rowKey];
+        else
+          newObj[rowKey] = key;
+      } else {
+        newObj = { [rowKey]: key, isNew: true };
+      }
+      form.resetFields();
+      setAddData([...addData, newObj]);
+      setEditingKey(key);
+      setFormValue(form,newObj,columns);
+      setExpandedRowKeys([newObj[rowKey]]);
+      setExpandedRow(newObj);
     }
-    form.resetFields();
-    form.setFieldsValue(newObj);
-    setAddData([...addData, newObj]);
-    setEditingKey(key);
   };
 
   const handleRemove = item => {
@@ -578,7 +596,7 @@ const EditableTable: React.FC<ETableProps> = ({
       const result = updateChangedData(changedData, { ...item, isDelete: true }, rowKey);
       onChangedDataUpdate(result);
     }
-    if (item.isNew)
+    if (item.isNew && item[rowKey] === editingKey)
       setEditingKey('');
   };
 
@@ -593,8 +611,9 @@ const EditableTable: React.FC<ETableProps> = ({
       updateRow = _.pickBy(updateRow, (_value,key) => !_.isEqual(updateRow[key],record[key]) && !(_.isObject(updateRow[key]) && _.isMatch(record[key],updateRow[key])));
       const updateData = changedData;
       if (record.isNew && !record.isUpdate) {
-        if(row[rowKey])
+        if(row[rowKey]) {
           record[rowKey] = row[rowKey];
+        }
         updateData.push(record);
         setAddData([]);
       }
@@ -640,7 +659,7 @@ const EditableTable: React.FC<ETableProps> = ({
           const editing = record[rowKey] === editingKey;
           return (
             <>
-              {canEdit(record) &&
+              {canEdit(record) && !editOnSelected &&
               (editing ? (
                 <>
                   <Tooltip title={i18n['ok']}>
@@ -660,7 +679,7 @@ const EditableTable: React.FC<ETableProps> = ({
                   }
                 </>
               ) : (
-                <a onClick={(e) => {
+                !editOnSelected && <a onClick={(e) => {
                   if (editingKey === '') {
                     beforeEdit(record);
                     setFormValue(form,record,columns);
@@ -725,9 +744,9 @@ const EditableTable: React.FC<ETableProps> = ({
         expandedRowKeys,
         expandIcon: ({ expanded, onExpand, record }) =>
           expanded ? (
-            <MinusCircleTwoTone onClick={e => onExpand(record, e)} />
+            <DownOutlined style={{color:'#006d75'}} onClick={e => onExpand(record, e)} />
           ) : (
-            <PlusCircleTwoTone onClick={e => onExpand(record, e)} />
+            <RightOutlined style={{color:'#006d75'}} onClick={e => onExpand(record, e)} />
           ),
         onExpand:(expanded, record) => {
           if(editingKey !== '' && record[rowKey] !== editingKey)
@@ -736,6 +755,7 @@ const EditableTable: React.FC<ETableProps> = ({
             if (!selectedRowKeys.find(k => k === record[rowKey])) {
               setSelectedRowKeys([record[rowKey]]);
             }
+            onExpandedRow(record);
             onSelectRow([record]);
             setFormValue(form,record,columns);
             setExpandedRowKeys([record[rowKey]]);
