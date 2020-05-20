@@ -341,8 +341,8 @@ const EditableRow: React.FC<PropsWithChildren<any>> = props => {
     borderTop: '1px solid #000',
     position: 'absolute',
     height: 1,
-    width: '100%',
-    marginTop: -24,
+    width: 'calc(100% - 4px)',
+    marginTop: -20,
   };
   return <>
     <tr {...props} style={style} />
@@ -724,7 +724,14 @@ const EditableTable: React.FC<ETableProps> = ({
       setAllColumnSeq(allCols);
     }
   }, [cols]);
-  useEffect(() => setColumns(getColumns()), [editingKey, changedData, columnSeq]);
+  useEffect(() => {
+    setColumns(getColumns());
+    if(expandedRow){
+      const updatedRow = changedData.find(c => c[rowKey] === expandedRow[rowKey]);
+      if(updatedRow)
+        setFormValue(form,updatedRow,columns);
+    }
+  }, [editingKey, changedData, columnSeq]);
   useEffect(() => setPager({ currentPage, pageSize }), [currentPage, pageSize]);
   useEffect(()=> {
     if(expandedFirstRow && data && data.length > 0){
