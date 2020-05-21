@@ -371,12 +371,14 @@ const EditableCell: React.FC<EditableCellProps> = ({ editor = { type: 'text' }, 
   return (
     <td {...restProps}>
       {editing ? (
-        <Form.Item style={{ margin: '-12px -4px' }}
-                   rules={rules}
-                   name={dataIndex}
-                   valuePropName={editor.type === 'checkbox' ? 'checked' : 'value'}>
-          {getInput(editor)}
-        </Form.Item>
+        editor.component ?
+          editor.component() :
+          <Form.Item style={{ margin: '-12px -4px' }}
+                     rules={rules}
+                     name={dataIndex}
+                     valuePropName={editor.type === 'checkbox' ? 'checked' : 'value'}>
+            {getInput(editor)}
+          </Form.Item>
       ) : (
         children
       )}
@@ -385,9 +387,7 @@ const EditableCell: React.FC<EditableCellProps> = ({ editor = { type: 'text' }, 
 };
 
 const getInput = (editor: ETableColEditorProps) => {
-  const { type = 'text', options = [], format, component } = editor;
-  if(component)
-    return component();
+  const { type = 'text', options = [], format, } = editor;
   switch (type) {
     case 'number':
       return <InputNumber/>;
