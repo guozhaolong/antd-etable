@@ -70,6 +70,7 @@ interface ETableColEditorProps {
   validator?: (...arg: any[]) => void;
   options?: any[];
   format?: string;
+  component?: ()=> React.ReactElement;
 }
 
 interface ETableColProps<T> extends ColumnType<T> {
@@ -384,7 +385,9 @@ const EditableCell: React.FC<EditableCellProps> = ({ editor = { type: 'text' }, 
 };
 
 const getInput = (editor: ETableColEditorProps) => {
-  const { type = 'text', options = [], format } = editor;
+  const { type = 'text', options = [], format, component } = editor;
+  if(component)
+    return component();
   switch (type) {
     case 'number':
       return <InputNumber/>;
