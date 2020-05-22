@@ -3,6 +3,7 @@ import EditableTable from '../../dist';
 import { Button, Checkbox, Input, Tooltip, Form, Row,Col,InputNumber,DatePicker } from 'antd';
 import styles from './index.css';
 import moment from 'moment';
+import { SearchOutlined } from '@ant-design/icons';
 
 const data = [
   {id:1,obj1:{a:1,b:2},name:'测试1',title:'哈哈',status:0,test1:'111',test2:'222',test3:'aaa',test4:'bbb',desc:'描述1描述1描述1描述1描述1描述1描述1描述1描述1描述1描述1',type:0,created_time:'2019-05-02 00:00:00'},
@@ -147,6 +148,7 @@ export default function() {
   const [showHeader,setShowHeader] = useState(true);
   const [showFooter,setShowFooter] = useState(true);
   const [loading,setLoading] = useState(true);
+  const [selectedRows,setSelectedRows] = useState([]);
   const tableRef = useRef();
   const demoButtons = <>
     <Button size="small" style={{marginRight:8}}>按钮一</Button>
@@ -160,6 +162,18 @@ export default function() {
     setTimeout(()=> {
       setLoading(false);
     }, 500 );
+  };
+  const handleChangeData = (record)=>{
+    setChangedData(changedData.map(c => {
+      if(c.id === record['id']){
+        return {
+          ...c,
+          name: 'haha'
+        }
+      }else{
+        return c;
+      }
+    }));
   };
   return (
     <div className={styles.root} >
@@ -202,13 +216,13 @@ export default function() {
         onFetch={(pager,filter,sorter)=>fetch(pager,filter,sorter)}
         onChangedDataUpdate={(d)=>{setChangedData(d)}}
         onAdd={()=>{console.log('onAdd');return {id:'test'+(i++)}}}
-        onSelectRow={(rows)=>console.log('onSelectRow',rows)}
+        onSelectRow={(rows)=>{console.log('onSelectRow',rows);setSelectedRows(rows)}}
         expandedFirstRow
         expandedRowRender={ record => (
           <>
             <Row gutter={16}>
               <Col span={8}>
-                <Form.Item name="name" label="名称" rules={[{required:true}]}><Input /></Form.Item>
+                <Form.Item name="name" label="名称" rules={[{required:true}]} ><Input suffix={<SearchOutlined onClick={()=>handleChangeData(record)} />} /></Form.Item>
               </Col>
               <Col span={8}>
                 <Form.Item name="created_time"

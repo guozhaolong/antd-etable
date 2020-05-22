@@ -616,6 +616,7 @@ const EditableTable: React.FC<ETableProps> = ({
         setExpandedRow(newObj);
         const result = updateChangedData(changedData, newObj, rowKey);
         onChangedDataUpdate(result);
+        onSelectRow([newObj]);
       });
     }
   };
@@ -641,6 +642,7 @@ const EditableTable: React.FC<ETableProps> = ({
         if(row[rowKey]) {
           record[rowKey] = row[rowKey];
           _.last(updateData)[rowKey] = row[rowKey];
+          onSelectRow([record]);
         }
       }
       afterEdit({ [rowKey]: record[rowKey], ...updateRow, isUpdate: true });
