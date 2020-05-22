@@ -133,7 +133,7 @@ const allCols = [
     ),
   }
 ];
-
+let i = 10;
 export default function() {
   const [changedData,setChangedData] = useState([]);
   const [showToolbar,setShowToolbar] = useState(true);
@@ -176,6 +176,7 @@ export default function() {
       </div>
       <EditableTable
         ref={tableRef}
+        editOnSelected={true}
         bordered={true}
         rowKey="id"
         title="测试列表"
@@ -200,7 +201,7 @@ export default function() {
         showFooter={showFooter}
         onFetch={(pager,filter,sorter)=>fetch(pager,filter,sorter)}
         onChangedDataUpdate={(d)=>{setChangedData(d)}}
-        onAdd={()=>{console.log('onAdd');return {id:'test'+new Date().getTime()}}}
+        onAdd={()=>{console.log('onAdd');return {id:'test'+(i++)}}}
         onSelectRow={(rows)=>console.log('onSelectRow',rows)}
         expandedFirstRow
         expandedRowRender={ record => (
