@@ -757,8 +757,8 @@ const EditableTable: React.FC<ETableProps> = ({
   }, [cols]);
   useEffect(() => {
     setColumns(getColumns());
-    if(expandedRow){
-      const updatedRow = changedData.find(c => c[rowKey] === expandedRow[rowKey]);
+    if(selectedRowKeys.length === 1){
+      const updatedRow = changedData.find(c => c[rowKey] === selectedRowKeys[0]);
       if(updatedRow)
         setFormValue(form,updatedRow,columns);
     }
