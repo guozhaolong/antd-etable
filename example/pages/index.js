@@ -214,7 +214,7 @@ export default function() {
         showHeader={showHeader}
         showFooter={showFooter}
         onFetch={(pager,filter,sorter)=>fetch(pager,filter,sorter)}
-        onChangedDataUpdate={(d)=>{setChangedData(d)}}
+        onChangedDataUpdate={(d)=>{console.log(d);setChangedData(d)}}
         onAdd={()=>{console.log('onAdd');return {id:'test'+(i++)}}}
         onSelectRow={(rows)=>{console.log('onSelectRow',rows);setSelectedRows(rows)}}
         expandedFirstRow

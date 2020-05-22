@@ -514,7 +514,6 @@ const EditableTable: React.FC<ETableProps> = ({
   const [columnsPopVisible, setColumnsPopVisible] = useState<boolean>(false);
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [expandedRowKeys,setExpandedRowKeys]  = useState<string[]>([]);
-  const [expandedRow,setExpandedRow] = useState<any>(null);
 
   const i18n = locale[lang.toLowerCase()];
   const updateData = data.filter(d => !!d).map(d => {
@@ -577,9 +576,8 @@ const EditableTable: React.FC<ETableProps> = ({
       if (!selectedRowKeys.find(k => k === record[rowKey])) {
         setSelectedRowKeys([record[rowKey]]);
         setFormValue(form,record,columns);
-        if(expandedRow){
+        if(expandedRowKeys.length > 0){
           setExpandedRowKeys([record[rowKey]]);
-          setExpandedRow(record);
         }
       }
       onSelectRow(rows);
@@ -613,7 +611,6 @@ const EditableTable: React.FC<ETableProps> = ({
         form.resetFields(); // 没找到好的办法,需要两次reset才能清空
         setFormValue(form, newObj, columns);
         setExpandedRowKeys([newObj[rowKey]]);
-        setExpandedRow(newObj);
         const result = updateChangedData(changedData, newObj, rowKey);
         onChangedDataUpdate(result);
         setSelectedRowKeys([newObj[rowKey]]);
@@ -669,8 +666,8 @@ const EditableTable: React.FC<ETableProps> = ({
   };
 
   const handleFormChange = (_values) => {
-    if(editOnSelected || editingKey === "" && expandedRow){
-      handleEditOk(expandedRow);
+    if(editOnSelected || editingKey === "" && expandedRowKeys.length > 0){
+      handleEditOk(dataSource.find(d => d[rowKey] === selectedRowKeys[0]));
     }
   };
 
@@ -716,7 +713,6 @@ const EditableTable: React.FC<ETableProps> = ({
                     setFormValue(form,record,columns);
                     setEditingKey(record[rowKey]);
                     setExpandedRowKeys([record[rowKey]]);
-                    setExpandedRow(record);
                   }
                   e.stopPropagation();
                 }}>
@@ -767,7 +763,6 @@ const EditableTable: React.FC<ETableProps> = ({
   useEffect(()=> {
     if(expandedFirstRow && data && data.length > 0){
       setExpandedRowKeys([data[0][rowKey]]);
-      setExpandedRow(data[0]);
       setFormValue(form,data[0],columns);
       setSelectedRowKeys([data[0][rowKey]]);
       onSelectRow([data[0]]);
@@ -793,11 +788,9 @@ const EditableTable: React.FC<ETableProps> = ({
             return;
           if(expanded){
             setExpandedRowKeys([record[rowKey]]);
-            setExpandedRow(record);
             onExpandedRow(record);
           } else {
             setExpandedRowKeys([]);
-            setExpandedRow(null);
           }
         },
       }
