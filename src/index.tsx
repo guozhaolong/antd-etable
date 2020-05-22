@@ -792,9 +792,9 @@ const EditableTable: React.FC<ETableProps> = ({
           if(!editOnSelected && editingKey !== '' && record[rowKey] !== editingKey)
             return;
           if(expanded){
-            onExpandedRow(record);
             setExpandedRowKeys([record[rowKey]]);
             setExpandedRow(record);
+            onExpandedRow(record);
           } else {
             setExpandedRowKeys([]);
             setExpandedRow(null);
