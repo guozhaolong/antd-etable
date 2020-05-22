@@ -148,7 +148,8 @@ export default function() {
   const [showHeader,setShowHeader] = useState(true);
   const [showFooter,setShowFooter] = useState(true);
   const [loading,setLoading] = useState(true);
-  const [selectedRows,setSelectedRows] = useState([]);
+  const [form] = Form.useForm();
+
   const tableRef = useRef();
   const demoButtons = <>
     <Button size="small" style={{marginRight:8}}>按钮一</Button>
@@ -175,6 +176,9 @@ export default function() {
       }
     }));
   };
+  const handleFormChange = (values)=>{
+
+  };
   return (
     <div className={styles.root} >
       <div style={{textAlign:'right',marginBottom:16}}>
@@ -188,68 +192,73 @@ export default function() {
         <Checkbox onChange={(e)=>setShowFooter(e.target.checked)} checked={showFooter}>显示底栏</Checkbox>
         <Button type="primary" onClick={()=>{console.log('onSave',changedData);}}>保存</Button>
       </div>
-      <EditableTable
-        ref={tableRef}
-        editOnSelected={true}
-        bordered={true}
-        rowKey="id"
-        title="测试列表"
-        scroll={{x:1400}}
-        loading={loading}
-        data={data}
-        changedData={changedData}
-        currentPage={currentPage}
-        pageSize={10}
-        total={100}
-        cols={cols}
-        allCols={allCols}
-        buttons={buttons}
-        showOpBtn={showOpBtn}
-        showAddBtn={showAddBtn}
-        multiSelect={multiSelect}
-        showSelector={showSelector}
-        showTopPager={showTopPager}
-        showToolbar={showToolbar}
-        showBottomPager={showBottomPager}
-        showHeader={showHeader}
-        showFooter={showFooter}
-        onFetch={(pager,filter,sorter)=>fetch(pager,filter,sorter)}
-        onChangedDataUpdate={(d)=>{console.log(d);setChangedData(d)}}
-        onAdd={()=>{console.log('onAdd');return {id:'test'+(i++)}}}
-        onSelectRow={(rows)=>{console.log('onSelectRow',rows);setSelectedRows(rows)}}
-        expandedFirstRow
-        expandedRowRender={ record => (
-          <>
-            <Row gutter={16}>
-              <Col span={8}>
-                <Form.Item name="name" label="名称" rules={[{required:true}]} ><Input suffix={<SearchOutlined onClick={()=>handleChangeData(record)} />} /></Form.Item>
-              </Col>
-              <Col span={8}>
-                <Form.Item name="created_time"
-                           label="创建时间"
-                           getValueProps={(value)=>({value:moment(value)})}
-                           getValueFromEvent={(e)=> moment(e).format("YYYY-MM-DD HH:mm:ss")}>
-                  <DatePicker format="YYYY-MM-DD HH:mm:ss" />
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                <Form.Item name={['obj1','b']} label="子属性2"><Input /></Form.Item>
-              </Col>
-            </Row>
-            <Row gutter={16}>
-              <Col span={8}>
-                <Form.Item name="desc" label="描述"><Input.TextArea /></Form.Item>
-              </Col>
-              <Col span={8}>
-                <Form.Item name="title" label="标题"><Input /></Form.Item>
-              </Col>
-              <Col span={8}>
-                <Form.Item name="status" label="状态"><InputNumber /></Form.Item>
-              </Col>
-            </Row>
-          </>
-        )}
-      />
+      <Form form={form} onValuesChange={handleFormChange} initialValues={{appId:'WO',appName:'工单'}}>
+        <Form.Item name="appId" label="主应用ID" rules={[{required:true}]} ><Input style={{width:160}} /></Form.Item>
+        <Form.Item name="appName" label="主应用名" rules={[{required:true}]} ><Input style={{width:160}} /></Form.Item>
+        <EditableTable
+          parentForm={form}
+          ref={tableRef}
+          editOnSelected={true}
+          bordered={true}
+          rowKey="id"
+          title="测试列表"
+          scroll={{x:1400}}
+          loading={loading}
+          data={data}
+          changedData={changedData}
+          currentPage={currentPage}
+          pageSize={10}
+          total={100}
+          cols={cols}
+          allCols={allCols}
+          buttons={buttons}
+          showOpBtn={showOpBtn}
+          showAddBtn={showAddBtn}
+          multiSelect={multiSelect}
+          showSelector={showSelector}
+          showTopPager={showTopPager}
+          showToolbar={showToolbar}
+          showBottomPager={showBottomPager}
+          showHeader={showHeader}
+          showFooter={showFooter}
+          onFetch={(pager,filter,sorter)=>fetch(pager,filter,sorter)}
+          onChangedDataUpdate={(d)=>{console.log(d);setChangedData(d)}}
+          onAdd={()=>{console.log('onAdd');return {id:'test'+(i++)}}}
+          onSelectRow={(rows)=>{console.log('onSelectRow',rows);}}
+          expandedFirstRow
+          expandedRowRender={ record => (
+            <>
+              <Row gutter={16}>
+                <Col span={8}>
+                  <Form.Item name="name" label="名称" rules={[{required:true}]} ><Input suffix={<SearchOutlined onClick={()=>handleChangeData(record)} />} /></Form.Item>
+                </Col>
+                <Col span={8}>
+                  <Form.Item name="created_time"
+                             label="创建时间"
+                             getValueProps={(value)=>({value:moment(value)})}
+                             getValueFromEvent={(e)=> moment(e).format("YYYY-MM-DD HH:mm:ss")}>
+                    <DatePicker format="YYYY-MM-DD HH:mm:ss" />
+                  </Form.Item>
+                </Col>
+                <Col span={8}>
+                  <Form.Item name={['obj1','b']} label="子属性2"><Input /></Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={8}>
+                  <Form.Item name="desc" label="描述"><Input.TextArea /></Form.Item>
+                </Col>
+                <Col span={8}>
+                  <Form.Item name="title" label="标题"><Input /></Form.Item>
+                </Col>
+                <Col span={8}>
+                  <Form.Item name="status" label="状态"><InputNumber /></Form.Item>
+                </Col>
+              </Row>
+            </>
+          )}
+        />
+      </Form>
     </div>
   );
 }

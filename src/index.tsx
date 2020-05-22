@@ -456,6 +456,7 @@ export interface ETableProps {
   expandedFirstRow?: boolean;
   editOnSelected?: boolean;
   onExpandedRow?: (...args: any[]) => void;
+  parentForm?: FormInstance;
 }
 
 const EditableTable: React.FC<ETableProps> = ({
@@ -498,9 +499,10 @@ const EditableTable: React.FC<ETableProps> = ({
                                                 expandedFirstRow = false,
                                                 editOnSelected = false,
                                                 onExpandedRow = () => {},
+                                                parentForm,
                                                 ...rest
                                               }) => {
-  const [form] = Form.useForm();
+  const [form] = Form.useForm(parentForm);
   const [showSelector, setShowSelector] = useState<boolean>(defaultShowSelecor);
   const [editingKey, setEditingKey] = useState<string>('');
   const [filterVisible, setFilterVisible] = useState<boolean>(false);
@@ -897,6 +899,24 @@ const EditableTable: React.FC<ETableProps> = ({
       </List.Item>
     )}
   />;
+
+  const table = <Table
+    locale={{ emptyText: <Empty description={i18n['empty']}/> }}
+    bordered={bordered}
+    size="middle"
+    rowKey={rowKey}
+    rowSelection={rowSelection}
+    footer={showFooter ? footer : undefined}
+    pagination={false}
+    loading={loading}
+    components={components}
+    columns={columns}
+    dataSource={dataSource}
+    onChange={(p, f, s) => handleTableChange(p, f, s)}
+    onRow={handleSelectRow}
+    scroll={scroll}
+    expandable={expandable}
+    {...rest} />;
   return (
     <EditableContext.Provider value={{
       rowKey,
@@ -987,25 +1007,12 @@ const EditableTable: React.FC<ETableProps> = ({
         }
         {
           !collapsed &&
-          <Form form={form} onValuesChange={handleFormChange} initialValues={{}}>
-            <Table
-              locale={{ emptyText: <Empty description={i18n['empty']}/> }}
-              bordered={bordered}
-              size="middle"
-              rowKey={rowKey}
-              rowSelection={rowSelection}
-              footer={showFooter ? footer : undefined}
-              pagination={false}
-              loading={loading}
-              components={components}
-              columns={columns}
-              dataSource={dataSource}
-              onChange={(p, f, s) => handleTableChange(p, f, s)}
-              onRow={handleSelectRow}
-              scroll={scroll}
-              expandable={expandable}
-              {...rest} />
-          </Form>
+          (parentForm ?
+            <>{table}</> :
+            <Form form={form} onValuesChange={handleFormChange} initialValues={{}}>
+              {table}
+            </Form>
+          )
         }
       </div>
     </EditableContext.Provider>
