@@ -789,15 +789,10 @@ const EditableTable: React.FC<ETableProps> = ({
             <RightOutlined style={{color:'#006d75'}} onClick={e => onExpand(record, e)} />
           ),
         onExpand:(expanded, record) => {
-          if(editingKey !== '' && record[rowKey] !== editingKey)
+          if(!editOnSelected && editingKey !== '' && record[rowKey] !== editingKey)
             return;
           if(expanded){
-            if (!selectedRowKeys.find(k => k === record[rowKey])) {
-              setSelectedRowKeys([record[rowKey]]);
-            }
             onExpandedRow(record);
-            onSelectRow([record]);
-            setFormValue(form,record,columns);
             setExpandedRowKeys([record[rowKey]]);
             setExpandedRow(record);
           } else {
