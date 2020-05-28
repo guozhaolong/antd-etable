@@ -16,7 +16,7 @@ const cols = [
   {
     title: 'ID',
     dataIndex: 'id',
-    editable:(record)=>(record.isNew && !record.isUpdate),
+    editable: false,
     width: 120,
   },
   {
@@ -196,7 +196,6 @@ export default function() {
         <Form.Item name="appId" label="主应用ID" rules={[{required:true}]} ><Input style={{width:160}} /></Form.Item>
         <Form.Item name="appName" label="主应用名" rules={[{required:true}]} ><Input style={{width:160}} /></Form.Item>
         <EditableTable
-          parentForm={form}
           ref={tableRef}
           editOnSelected={true}
           bordered={true}

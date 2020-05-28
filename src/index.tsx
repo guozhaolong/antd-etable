@@ -557,7 +557,7 @@ const EditableTable: React.FC<ETableProps> = ({
     onFetch({ currentPage: current, pageSize: size }, filters, sorters);
   };
 
-  let rowSelection: any = {
+  let rowSelection: any = useMemo(()=> ({
     selectedRowKeys,
     type: multiSelect ? 'checkbox' : 'radio',
     onChange: (keys, _rows) => setSelectedRowKeys(keys),
@@ -565,7 +565,7 @@ const EditableTable: React.FC<ETableProps> = ({
       handleSelect(record,rows);
     },
     onSelectAll: (_selected, rows, _changeRows) => onSelectRow(rows),
-  };
+  }),[selectedRowKeys,multiSelect]);
 
   if (!showSelector) {
     rowSelection = undefined;
@@ -594,9 +594,9 @@ const EditableTable: React.FC<ETableProps> = ({
     },
   });
 
-  const handleAdd = () => {
+  const handleAdd =  () => {
     if(editingKey === "" || editOnSelected) {
-      form.validateFields().then(_row => { // 点击新建前校验上一条数据的有效性
+      form.validateFields().then(()=> {
         let newObj = onAdd();
         let key = _.uniqueId(newRowKeyPrefix);
         if (newObj) {
@@ -610,13 +610,12 @@ const EditableTable: React.FC<ETableProps> = ({
         }
         setEditingKey(key);
         form.resetFields();
-        form.resetFields(); // 没找到好的办法,需要两次reset才能清空
-        setFormValue(form, newObj, columns);
+        setFormValue(form,newObj,columns);
         setExpandedRowKeys([newObj[rowKey]]);
-        const result = updateChangedData(changedData, newObj, rowKey);
-        onChangedDataUpdate(result);
         setSelectedRowKeys([newObj[rowKey]]);
         onSelectRow([newObj]);
+        const result = updateChangedData(changedData, newObj, rowKey);
+        onChangedDataUpdate(result);
       });
     }
   };
@@ -628,29 +627,24 @@ const EditableTable: React.FC<ETableProps> = ({
       setEditingKey('');
   };
 
+  const handleUpdate = (record,row)=>{
+    let updateRow = _.pickBy(row, (value) => !_.isUndefined(value));
+    for (let key in updateRow) {
+      if (moment.isMoment(updateRow[key])) {
+        updateRow[key] = updateRow[key].format(updateRow[key]._f);
+      }
+    }
+    updateRow = _.pickBy(updateRow, (_value,key) => !_.isEqual(updateRow[key],record[key]) && !(_.isObject(updateRow[key]) && _.isMatch(record[key],updateRow[key])));
+    afterEdit({ [rowKey]: record[rowKey], ...updateRow, isUpdate: true });
+    const result = updateChangedData(changedData, { [rowKey]: record[rowKey], ...updateRow, isUpdate: true }, rowKey);
+    onChangedDataUpdate(result);
+    if(!editOnSelected)
+      setEditingKey('');
+  };
+
   const handleEditOk = record => {
     form.validateFields().then(row => {
-      let updateRow = _.pickBy(row, (value) => !_.isUndefined(value));
-      for (let key in updateRow) {
-        if (moment.isMoment(updateRow[key])) {
-          updateRow[key] = updateRow[key].format(updateRow[key]._f);
-        }
-      }
-      updateRow = _.pickBy(updateRow, (_value,key) => !_.isEqual(updateRow[key],record[key]) && !(_.isObject(updateRow[key]) && _.isMatch(record[key],updateRow[key])));
-      const updateData = changedData;
-      if (record.isNew && !record.isUpdate) {
-        if(row[rowKey]) {
-          record[rowKey] = row[rowKey];
-          _.last(updateData)[rowKey] = row[rowKey];
-          setSelectedRowKeys([row[rowKey]]);
-          onSelectRow([record]);
-        }
-      }
-      afterEdit({ [rowKey]: record[rowKey], ...updateRow, isUpdate: true });
-      const result = updateChangedData(updateData, { [rowKey]: record[rowKey], ...updateRow, isUpdate: true }, rowKey);
-      onChangedDataUpdate(result);
-      if(!editOnSelected)
-        setEditingKey('');
+      handleUpdate(record,row);
     }).catch(errorInfo => {
       if(errorInfo.outOfDate){
         handleEditOk(record);
@@ -667,9 +661,9 @@ const EditableTable: React.FC<ETableProps> = ({
     exportCSV({ name: 'table', header: flatCols(columnSeq), data: allData });
   };
 
-  const handleFormChange = (_values) => {
+  const handleFormChange = (values) => {
     if(editOnSelected || editingKey === "" && expandedRowKeys.length > 0){
-      handleEditOk(dataSource.find(d => d[rowKey] === selectedRowKeys[0]));
+      handleUpdate(dataSource.find(d => d[rowKey] === selectedRowKeys[0]),values);
     }
   };
 
@@ -755,12 +749,15 @@ const EditableTable: React.FC<ETableProps> = ({
   }, [cols]);
   useEffect(() => {
     setColumns(getColumns());
+  }, [editingKey, changedData, columnSeq]);
+  useEffect(()=>{
     if(selectedRowKeys.length === 1){
       const updatedRow = changedData.find(c => c[rowKey] === selectedRowKeys[0]);
-      if(updatedRow)
-        setFormValue(form,updatedRow,columns);
+      if(updatedRow) {
+        setFormValue(form, updatedRow, columns);
+      }
     }
-  }, [editingKey, changedData, columnSeq]);
+  },[changedData]);
   useEffect(() => setPager({ currentPage, pageSize }), [currentPage, pageSize]);
   useEffect(()=> {
     if(expandedFirstRow && data && data.length > 0){
