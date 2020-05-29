@@ -417,6 +417,7 @@ const getInput = (editor: ETableColEditorProps) => {
 const defaultArr = [];
 
 export interface ETableProps {
+  name?: string;
   bordered?: boolean;
   lang?: 'zh' | 'en' | 'pt_br';
   rowKey?: string;
@@ -460,6 +461,7 @@ export interface ETableProps {
 }
 
 const EditableTable: React.FC<ETableProps> = ({
+                                                name ,
                                                 bordered = false,
                                                 lang = 'zh',
                                                 rowKey = 'id',
@@ -635,8 +637,17 @@ const EditableTable: React.FC<ETableProps> = ({
       }
     }
     updateRow = _.pickBy(updateRow, (_value,key) => !_.isEqual(updateRow[key],record[key]) && !(_.isObject(updateRow[key]) && _.isMatch(record[key],updateRow[key])));
+    const updateData = changedData;
+    if (record.isNew && !record.isUpdate) {
+      if(row[rowKey]) {
+        record[rowKey] = row[rowKey];
+        _.last(updateData)[rowKey] = row[rowKey];
+        setSelectedRowKeys([row[rowKey]]);
+        onSelectRow([record]);
+      }
+    }
     afterEdit({ [rowKey]: record[rowKey], ...updateRow, isUpdate: true });
-    const result = updateChangedData(changedData, { [rowKey]: record[rowKey], ...updateRow, isUpdate: true }, rowKey);
+    const result = updateChangedData(updateData, { [rowKey]: record[rowKey], ...updateRow, isUpdate: true }, rowKey);
     onChangedDataUpdate(result);
     if(!editOnSelected)
       setEditingKey('');
@@ -1006,7 +1017,7 @@ const EditableTable: React.FC<ETableProps> = ({
           !collapsed &&
           (parentForm ?
             <>{table}</> :
-            <Form form={form} onValuesChange={handleFormChange} initialValues={{}}>
+            <Form name={name} form={form} onValuesChange={handleFormChange} initialValues={{}}>
               {table}
             </Form>
           )
