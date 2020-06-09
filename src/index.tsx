@@ -579,6 +579,7 @@ const EditableTable: React.FC<ETableProps> = ({
         setEditingKey(record[rowKey]);
       if (!selectedRowKeys.find(k => k === record[rowKey])) {
         setSelectedRowKeys([record[rowKey]]);
+        form.resetFields();
         setFormValue(form,record,columns);
         if(expandedRowKeys.length > 0){
           setExpandedRowKeys([record[rowKey]]);
