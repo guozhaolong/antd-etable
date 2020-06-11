@@ -804,7 +804,17 @@ const EditableTable: React.FC<ETableProps> = ({
             } else {
               setExpandedRowKeys([]);
             }
-          });
+          }).catch(errorInfo => {
+            if(errorInfo.outOfDate){
+              if(expanded){
+                setExpandedRowKeys([record[rowKey]]);
+                onExpandedRow(record);
+              } else {
+                setExpandedRowKeys([]);
+              }
+            }
+            return errorInfo;
+          });;
         },
       }
     }else{
