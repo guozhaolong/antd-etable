@@ -797,12 +797,14 @@ const EditableTable: React.FC<ETableProps> = ({
         onExpand:(expanded, record) => {
           if(!editOnSelected && editingKey !== '' && record[rowKey] !== editingKey)
             return;
-          if(expanded){
-            setExpandedRowKeys([record[rowKey]]);
-            onExpandedRow(record);
-          } else {
-            setExpandedRowKeys([]);
-          }
+          form.validateFields().then(_row => {
+            if(expanded){
+              setExpandedRowKeys([record[rowKey]]);
+              onExpandedRow(record);
+            } else {
+              setExpandedRowKeys([]);
+            }
+          });
         },
       }
     }else{
