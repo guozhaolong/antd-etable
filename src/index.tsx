@@ -783,7 +783,10 @@ const EditableTable: React.FC<ETableProps> = ({
   },[changedData]);
   useEffect(() => setPager({ currentPage, pageSize }), [currentPage, pageSize]);
   useEffect(()=> {
-    if(expandedFirstRow && data && data.length > 0){
+    if(expandedRowKeys.length > 0 && data && data.length > 0){
+      const updateData = data.find(d => d[rowKey] === expandedRowKeys[0]);
+      setFormValue(form,updateData,columns);
+    }else if(expandedFirstRow && data && data.length > 0){
       setExpandedRowKeys([data[0][rowKey]]);
       setFormValue(form,data[0],columns);
       setSelectedRowKeys([data[0][rowKey]]);
