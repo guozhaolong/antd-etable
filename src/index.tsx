@@ -574,19 +574,17 @@ const EditableTable: React.FC<ETableProps> = ({
   }
 
   const handleSelect = (record,rows)=>{
-    form.validateFields().then(_row => {
-      if(editOnSelected)
-        setEditingKey(record[rowKey]);
-      if (!selectedRowKeys.find(k => k === record[rowKey])) {
-        setSelectedRowKeys([record[rowKey]]);
-        form.resetFields();
-        setFormValue(form,record,columns);
-        if(expandedRowKeys.length > 0){
-          setExpandedRowKeys([record[rowKey]]);
-        }
+    if (editOnSelected)
+      setEditingKey(record[rowKey]);
+    if (!selectedRowKeys.find(k => k === record[rowKey])) {
+      setSelectedRowKeys([record[rowKey]]);
+      form.resetFields(_.keys(record));
+      setFormValue(form, record, columns);
+      if (expandedRowKeys.length > 0) {
+        setExpandedRowKeys([record[rowKey]]);
       }
-      onSelectRow(rows);
-    });
+    }
+    onSelectRow(rows);
   };
 
   const handleSelectRow = record => ({
@@ -599,7 +597,7 @@ const EditableTable: React.FC<ETableProps> = ({
 
   const handleAdd =  () => {
     if(editingKey === "" || editOnSelected) {
-      form.validateFields().then(()=> {
+      form.validateFields().then(() => {
         let newObj = onAdd();
         let key = _.uniqueId(newRowKeyPrefix);
         if (newObj) {
@@ -612,8 +610,10 @@ const EditableTable: React.FC<ETableProps> = ({
           newObj = { [rowKey]: key, isNew: true };
         }
         setEditingKey(key);
-        form.resetFields();
-        setFormValue(form,newObj,columns);
+        if(dataSource.length > 0) {
+          form.resetFields(_.keys(dataSource[0]));
+        }
+        setFormValue(form, newObj, columns);
         setExpandedRowKeys([newObj[rowKey]]);
         setSelectedRowKeys([newObj[rowKey]]);
         onSelectRow([newObj]);
@@ -655,10 +655,10 @@ const EditableTable: React.FC<ETableProps> = ({
   };
 
   const handleEditOk = record => {
-    form.validateFields().then(row => {
-      handleUpdate(record,row);
+    form.validateFields(_.keys(record)).then(row => {
+      handleUpdate(record, row);
     }).catch(errorInfo => {
-      if(errorInfo.outOfDate){
+      if (errorInfo.outOfDate) {
         handleEditOk(record);
       }
       return errorInfo;
@@ -676,6 +676,15 @@ const EditableTable: React.FC<ETableProps> = ({
   const handleFormChange = (values) => {
     if(editOnSelected || editingKey === "" && expandedRowKeys.length > 0){
       handleUpdate(dataSource.find(d => d[rowKey] === selectedRowKeys[0]),values);
+    }
+  };
+
+  const handleFilterClear = () => {
+    if (!_.isEmpty(filter)) {
+      if(dataSource.length > 0) {
+        form.resetFields(_.keys(dataSource[0]));
+      }
+      handleTableChange({ currentPage: 1 }, { clear: true });
     }
   };
 
@@ -718,7 +727,9 @@ const EditableTable: React.FC<ETableProps> = ({
                 !editOnSelected && <a onClick={(e) => {
                   if (editingKey === '') {
                     beforeEdit(record);
-                    setFormValue(form,record,columns);
+                    if(!parentForm) {
+                      setFormValue(form, record, columns);
+                    }
                     setEditingKey(record[rowKey]);
                     setExpandedRowKeys([record[rowKey]]);
                   }
@@ -961,12 +972,7 @@ const EditableTable: React.FC<ETableProps> = ({
                       cursor: _.isEmpty(filter) ? 'default' : 'pointer',
                       color: _.isEmpty(filter) ? '#ddd' : '#666',
                     }}
-                                onClick={() => {
-                                  if (!_.isEmpty(filter)) {
-                                    form.resetFields();
-                                    handleTableChange({ currentPage: 1 }, { clear: true });
-                                  }
-                                }}/>
+                                onClick={handleFilterClear}/>
                   </Tooltip>
                   <Tooltip title={i18n['search']}>
                     <SearchOutlined onClick={() => handleTableChange({ currentPage: 1 })}/>

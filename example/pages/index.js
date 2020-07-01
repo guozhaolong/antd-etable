@@ -199,7 +199,7 @@ export default function() {
         <Form.Item name="appName" label="主应用名" rules={[{required:true}]} ><Input style={{width:160}} /></Form.Item>
         <EditableTable
           ref={tableRef}
-          editOnSelected={true}
+          editOnSelected={false}
           bordered={true}
           rowKey="id"
           title="测试列表"
