@@ -813,9 +813,10 @@ const EditableTable: React.FC<ETableProps> = ({
             return;
           if(expanded){
             setExpandedRowKeys([record[rowKey]]);
-            onExpandedRow(record);
+            onExpandedRow(record,true);
           } else {
             setExpandedRowKeys([]);
+            onExpandedRow(record,false);
           }
         },
       }
