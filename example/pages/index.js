@@ -4,11 +4,12 @@ import { Button, Checkbox, Input, Tooltip, Form, Row,Col,InputNumber,DatePicker 
 import styles from './index.css';
 import moment from 'moment';
 import { SearchOutlined } from '@ant-design/icons';
+import _ from "lodash";
 
-const data = [
-  {id:1,obj1:{a:1,b:2},name:'测试1',title:'哈哈',status:0,test1:'111',test2:'222',test3:'aaa',test4:'bbb',desc:'描述1描述1描述1描述1描述1描述1描述1描述1描述1描述1描述1',type:0,created_time:'2019-05-02 00:00:00'},
-  {id:2,obj1:{a:3,b:4},name:'测试2',title:'呵呵',status:1,test1:'333',test2:'444',test3:'ccc',test4:'ddd',desc:'描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2',type:1,created_time:'2019-05-03 00:00:00'},
-  {id:3,obj1:{a:5,b:6},name:'测试3',title:'嘻嘻',status:2,test1:'555',test2:'666',test3:'eee',test4:'fff',desc:'描述3描述3描述3描述3描述3描述3描述3描述3描述3描述3描述3',type:0,created_time:'2019-05-04 00:00:00'},
+const demoData = [
+  {id:1,obj1:{a:1,},name:'测试1',title:'哈哈',status:0,test1:'111',test2:'222',test3:'aaa',test4:'bbb',desc:'描述1描述1描述1描述1描述1描述1描述1描述1描述1描述1描述1',type:0,created_time:'2019-05-02 00:00:00'},
+  {id:2,obj1:{a:3,},name:'测试2',title:'呵呵',status:1,test1:'333',test2:'444',test3:'ccc',test4:'ddd',desc:'描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2',type:1,created_time:'2019-05-03 00:00:00'},
+  {id:3,obj1:{a:5,},name:'测试3',title:'嘻嘻',status:2,test1:'555',test2:'666',test3:'eee',test4:'fff',desc:'描述3描述3描述3描述3描述3描述3描述3描述3描述3描述3描述3',type:0,created_time:'2019-05-04 00:00:00'},
   {id:4},
   {id:5},
 ];
@@ -39,7 +40,7 @@ const cols = [
     editor: {
       required: true,
       validator: (rule,value,callback,record) => {
-        if(data.find(d => d.name === value && record.id !== d.id))
+        if(demoData.find(d => d.name === value && record.id !== d.id))
           callback('名称已存在!');
         else
           callback();
@@ -138,6 +139,7 @@ const allCols = [
 ];
 let i = 10;
 export default function() {
+  const [data,setData] = useState(demoData);
   const [changedData,setChangedData] = useState([]);
   const [showToolbar,setShowToolbar] = useState(true);
   const [showOpBtn,setShowOpBtn] = useState(true);
@@ -179,7 +181,15 @@ export default function() {
     }));
   };
   const handleFormChange = (values)=>{
-
+  };
+  const handleExpandRow = (row)=>{
+    setData(data.map(c => {
+      if(c.id === row.id){
+        return _.merge({b:"haha"}, c);
+      }else{
+        return c;
+      }
+    }));
   };
   return (
     <div className={styles.root} >
@@ -199,7 +209,8 @@ export default function() {
         <Form.Item name="appName" label="主应用名" rules={[{required:true}]} ><Input style={{width:160}} /></Form.Item>
         <EditableTable
           ref={tableRef}
-          editOnSelected={false}
+          parentForm={form}
+          editOnSelected={true}
           bordered={true}
           rowKey="id"
           title="测试列表"
@@ -226,7 +237,8 @@ export default function() {
           onChangedDataUpdate={(d)=>{console.log(d);setChangedData(d)}}
           onAdd={()=>{console.log('onAdd');return {id:'test'+(i++)}}}
           onSelectRow={(rows)=>{console.log('onSelectRow',rows);}}
-          expandedFirstRow
+          expandedFirstRow={false}
+          onExpandedRow={handleExpandRow}
           expandedRowRender={ record => (
             <>
               <Row gutter={16}>

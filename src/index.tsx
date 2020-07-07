@@ -623,11 +623,12 @@ const EditableTable: React.FC<ETableProps> = ({
     }
   };
 
-  const handleRemove = item => {
-    const result = updateChangedData(changedData, { ...item, isDelete: true }, rowKey);
+  const handleRemove = (item,isDelete) => {
+    const result = updateChangedData(changedData, { ...item, isDelete }, rowKey);
     onChangedDataUpdate(result);
     if (item.isNew && item[rowKey] === editingKey)
       setEditingKey('');
+    onSelectRow([{ ...item, isDelete }]);
   };
 
   const handleUpdate = (record,row)=>{
@@ -745,11 +746,11 @@ const EditableTable: React.FC<ETableProps> = ({
                 <Tooltip title={record.isDelete ? i18n['undelete'] : i18n['delete']}>
                   <>
                     {!record.isDelete && <DeleteOutlined style={{ cursor: 'pointer' }} onClick={(e) => {
-                      handleRemove(record);
+                      handleRemove(record,true);
                       e.stopPropagation();
                     }}/>}
                     {record.isDelete && <DeleteFilled style={{ cursor: 'pointer' }} onClick={(e) => {
-                      handleRemove(record);
+                      handleRemove(record,false);
                       e.stopPropagation();
                     }}/>}
                   </>
