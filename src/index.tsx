@@ -530,7 +530,6 @@ const EditableTable: React.FC<ETableProps> = ({
   const newData = changedData.filter(s => s.isNew);
   const temp:any[] = [];
   const dataSource = temp.concat(newData).reverse().concat(updateData);
-
   const handleTableChange = (p?: any, f?: any, s?: any) => {
     let current = pager.currentPage;
     let size = pager.pageSize;
