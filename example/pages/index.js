@@ -153,6 +153,7 @@ export default function() {
   const [showFooter,setShowFooter] = useState(true);
   const [loading,setLoading] = useState(true);
   const [form] = Form.useForm();
+  const [currentRow,setCurrentRow] = useState();
 
   const tableRef = useRef();
   const demoButtons = <>
@@ -181,6 +182,22 @@ export default function() {
     }));
   };
   const handleFormChange = (values)=>{
+    if(currentRow){
+      const isExistRow = changedData.find(c => c.id === currentRow.id);
+      if(!isExistRow){
+        const updateData = [...changedData,{id:currentRow.id,...values,isUpdate: true}];
+        setChangedData(updateData);
+      }else {
+        const updateData = changedData.map(c => {
+          if (c.id === currentRow.id) {
+            return _.merge({}, c, values);
+          } else {
+            return c;
+          }
+        });
+        setChangedData(updateData);
+      }
+    }
   };
   const handleExpandRow = (row)=>{
     setData(data.map(c => {
@@ -236,7 +253,7 @@ export default function() {
           onFetch={(pager,filter,sorter)=>fetch(pager,filter,sorter)}
           onChangedDataUpdate={(d)=>{console.log(d);setChangedData(d)}}
           onAdd={()=>{console.log('onAdd');return {id:'test'+(i++)}}}
-          onSelectRow={(rows)=>{console.log('onSelectRow',rows);}}
+          onSelectRow={(rows)=>{console.log('onSelectRow',rows);setCurrentRow(rows[0])}}
           expandedFirstRow={false}
           onExpandedRow={handleExpandRow}
           expandedRowRender={ record => (

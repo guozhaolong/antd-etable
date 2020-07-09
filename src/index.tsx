@@ -374,6 +374,14 @@ const EditableCell: React.FC<EditableCellProps> = ({ editor = { type: 'text' }, 
           <Form.Item style={{ margin: '-12px -4px' }}
                      rules={rules}
                      name={dataIndex}
+                     getValueFromEvent={(e)=>{
+                       if(editor.type === 'datetime')
+                         return moment(e).format("YYYY-MM-DD HH:mm:ss");
+                       else if(editor.type === 'number')
+                         return e;
+                       else
+                         return e.target.value;
+                     }}
                      valuePropName={editor.type === 'checkbox' ? 'checked' : 'value'}>
             {getInput(editor)}
           </Form.Item>
