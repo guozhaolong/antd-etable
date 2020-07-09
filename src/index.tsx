@@ -599,34 +599,32 @@ const EditableTable: React.FC<ETableProps> = ({
 
   const handleAdd =  () => {
     if(editingKey === "" || editOnSelected) {
-      form.validateFields().then(() => {
-        let newObj = onAdd();
-        let key = _.uniqueId(newRowKeyPrefix);
-        if (newObj) {
-          newObj.isNew = true;
-          if (newObj[rowKey])
-            key = newObj[rowKey];
-          else
-            newObj[rowKey] = key;
-        } else {
-          newObj = { [rowKey]: key, isNew: true };
+      let newObj = onAdd();
+      let key = _.uniqueId(newRowKeyPrefix);
+      if (newObj) {
+        newObj.isNew = true;
+        if (newObj[rowKey])
+          key = newObj[rowKey];
+        else
+          newObj[rowKey] = key;
+      } else {
+        newObj = { [rowKey]: key, isNew: true };
+      }
+      setEditingKey(key);
+      if(dataSource.length > 0) {
+        if(selectedRowKeys.length > 0){
+          const previousRow = dataSource.find(d => d[rowKey] === selectedRowKeys[0]);
+          form.resetFields(_.keys(previousRow));
+        }else {
+          form.resetFields(_.keys(dataSource[0]));
         }
-        setEditingKey(key);
-        if(dataSource.length > 0) {
-          if(selectedRowKeys.length > 0){
-            const previousRow = dataSource.find(d => d[rowKey] === selectedRowKeys[0]);
-            form.resetFields(_.keys(previousRow));
-          }else {
-            form.resetFields(_.keys(dataSource[0]));
-          }
-        }
-        setFormValue(form, newObj, columns);
-        setExpandedRowKeys([newObj[rowKey]]);
-        setSelectedRowKeys([newObj[rowKey]]);
-        onSelectRow([newObj]);
-        const result = updateChangedData(changedData, newObj, rowKey);
-        onChangedDataUpdate(result);
-      });
+      }
+      setFormValue(form, newObj, columns);
+      setExpandedRowKeys([newObj[rowKey]]);
+      setSelectedRowKeys([newObj[rowKey]]);
+      onSelectRow([newObj]);
+      const result = updateChangedData(changedData, newObj, rowKey);
+      onChangedDataUpdate(result);
     }
   };
 
