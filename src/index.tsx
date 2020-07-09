@@ -577,8 +577,11 @@ const EditableTable: React.FC<ETableProps> = ({
     if (editOnSelected)
       setEditingKey(record[rowKey]);
     if (!selectedRowKeys.find(k => k === record[rowKey])) {
+      if(selectedRowKeys.length > 0){
+        const previousRow = dataSource.find(d => d[rowKey] === selectedRowKeys[0]);
+        form.resetFields(_.keys(previousRow));
+      }
       setSelectedRowKeys([record[rowKey]]);
-      form.resetFields(_.keys(record));
       setFormValue(form, record, columns);
       if (expandedRowKeys.length > 0) {
         setExpandedRowKeys([record[rowKey]]);
@@ -611,7 +614,12 @@ const EditableTable: React.FC<ETableProps> = ({
         }
         setEditingKey(key);
         if(dataSource.length > 0) {
-          form.resetFields(_.keys(dataSource[0]));
+          if(selectedRowKeys.length > 0){
+            const previousRow = dataSource.find(d => d[rowKey] === selectedRowKeys[0]);
+            form.resetFields(_.keys(previousRow));
+          }else {
+            form.resetFields(_.keys(dataSource[0]));
+          }
         }
         setFormValue(form, newObj, columns);
         setExpandedRowKeys([newObj[rowKey]]);
