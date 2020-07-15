@@ -374,6 +374,7 @@ const EditableCell: React.FC<EditableCellProps> = ({ editor = { type: 'text' }, 
           <Form.Item style={{ margin: '-12px -4px' }}
                      rules={rules}
                      name={dataIndex}
+                     getValueProps={(value)=>(editor.type === 'datetime' && value !== null ? {value:moment(value)} : {value})}
                      getValueFromEvent={(e)=>{
                        if(editor.type === 'datetime')
                          return moment(e).format("YYYY-MM-DD HH:mm:ss");
