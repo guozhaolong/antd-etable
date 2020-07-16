@@ -382,6 +382,8 @@ const EditableCell: React.FC<EditableCellProps> = ({ editor = { type: 'text' }, 
                            return moment();
                          }
                        }else if(editor.type === 'datetime'){
+                         if(!value)
+                           return moment();
                          return {value: moment(value)}
                        }
                        return {value}
