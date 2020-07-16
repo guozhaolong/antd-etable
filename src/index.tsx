@@ -374,7 +374,18 @@ const EditableCell: React.FC<EditableCellProps> = ({ editor = { type: 'text' }, 
           <Form.Item style={{ margin: '-12px -4px' }}
                      rules={rules}
                      name={dataIndex}
-                     getValueProps={(value)=>(editor.type === 'datetime' && value !== null ? {value:moment(value)} : {value})}
+                     getValueProps={(value)=>{
+                       if(editor.type === 'datetime' && _.isObject(value)) {
+                         if(value.isValid()){
+                           return { value };
+                         }else{
+                           return moment();
+                         }
+                       }else if(editor.type === 'datetime'){
+                         return {value: moment(value)}
+                       }
+                       return {value}
+                     }}
                      getValueFromEvent={(e)=>{
                        if(editor.type === 'datetime')
                          return moment(e).format("YYYY-MM-DD HH:mm:ss");
@@ -940,6 +951,7 @@ const EditableTable: React.FC<ETableProps> = ({
   />;
 
   const table = <Table
+    tableLayout="fixed"
     locale={{ emptyText: <Empty description={i18n['empty']}/> }}
     bordered={bordered}
     size="middle"
