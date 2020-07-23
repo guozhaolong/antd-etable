@@ -687,7 +687,7 @@ const EditableTable: React.FC<ETableProps> = ({
   };
 
   const handleEditOk = record => {
-    form.validateFields(_.keys(record)).then(row => {
+    form.validateFields().then(row => {
       handleUpdate(record, row);
     }).catch(errorInfo => {
       if (errorInfo.outOfDate) {
