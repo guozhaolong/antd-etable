@@ -375,13 +375,13 @@ const EditableCell: React.FC<EditableCellProps> = ({ editor = { type: 'text' }, 
                      rules={rules}
                      name={dataIndex}
                      getValueProps={(value)=>{
-                       if(editor.type === 'datetime' && _.isObject(value)) {
+                       if((editor.type === 'datetime' || editor.type === 'date' || editor.type === 'time') && _.isObject(value)) {
                          if(value.isValid()){
                            return { value };
                          }else{
                            return moment();
                          }
-                       }else if(editor.type === 'datetime'){
+                       }else if(editor.type === 'datetime' || editor.type === 'date' || editor.type === 'time'){
                          if(!value)
                            return moment();
                          return {value: moment(value)}
@@ -391,7 +391,11 @@ const EditableCell: React.FC<EditableCellProps> = ({ editor = { type: 'text' }, 
                      getValueFromEvent={(e)=>{
                        if(editor.type === 'datetime')
                          return moment(e).format("YYYY-MM-DD HH:mm:ss");
-                       else if(editor.type === 'number')
+                       else if(editor.type === 'date')
+                         return moment(e).format("YYYY-MM-DD");
+                       else if(editor.type === 'time')
+                         return moment(e).format("HH:mm:ss");
+                       else if(editor.type === 'number' || editor.type === 'select')
                          return e;
                        else
                          return e.target.value;
