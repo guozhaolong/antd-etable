@@ -394,7 +394,7 @@ const EditableCell: React.FC<EditableCellProps> = ({ editor = { type: 'text' }, 
                        else if(editor.type === 'date')
                          return moment(e).format("YYYY-MM-DD");
                        else if(editor.type === 'time')
-                         return moment(e).format("HH:mm:ss");
+                         return moment(e).format("HH:mm");
                        else if(editor.type === 'number' || editor.type === 'select')
                          return e;
                        else
@@ -759,9 +759,10 @@ const EditableTable: React.FC<ETableProps> = ({
                 !editOnSelected && <a onClick={(e) => {
                   if (editingKey === '') {
                     beforeEdit(record);
-                    if(!parentForm) {
-                      setFormValue(form, record, columns);
-                    }
+                    const previousRow = dataSource.find(d => d[rowKey] === selectedRowKeys[0]);
+                    form.resetFields(_.keys(previousRow));
+                    setFormValue(form, record, columns);
+                    setSelectedRowKeys([record[rowKey]]);
                     setEditingKey(record[rowKey]);
                     setExpandedRowKeys([record[rowKey]]);
                   }
