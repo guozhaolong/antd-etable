@@ -371,13 +371,13 @@ const EditableCell: React.FC<EditableCellProps> = ({ editor = { type: 'string' }
     rules.push({ validator: (rule, value, callback) => editor.validator!(rule, value, callback, record) });
   }
   if(type === 'string' && max){
-    rules.push({ type: 'string', max, message: '字段超出长度' });
+    rules.push({ type: 'string', max: max, message: `最多${max}个字符` });
   }
   if(type === 'number' && max){
-    rules.push({ type: 'number', max,  message: '超出最大值' });
+    rules.push({ type: 'number', max, message: `不能大于${max}` });
   }
   if(type === 'number' && min){
-    rules.push({ type: 'number', min,  message: '超出最小值' });
+    rules.push({ type: 'number', min, message: `不能小于${min}` });
   }
   if(type === 'string' && regex){
     rules.push({ type: 'string', pattern: regex, message: '内容不符合要求' });
