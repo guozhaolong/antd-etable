@@ -28,7 +28,8 @@ const cols = [
     editable:true,
     width: 120,
     editor: {
-      type:'number'
+      type:'number',
+      max: 400,
     }
   },
   {
@@ -85,6 +86,9 @@ const cols = [
     dataIndex: 'desc',
     editable:true,
     width: 200,
+    editor: {
+      max: 4,
+    },
     render: (text) => {
       return <Tooltip title={text}>{text}</Tooltip>
     }
@@ -223,7 +227,7 @@ export default function() {
       </div>
       <Form form={form} onValuesChange={handleFormChange} initialValues={{appId:'WO',appName:'工单'}}>
         <Form.Item name="appId" label="主应用ID" rules={[{required:true}]} ><Input style={{width:160}} /></Form.Item>
-        <Form.Item name="appName" label="主应用名" rules={[{required:true}]} ><Input style={{width:160}} /></Form.Item>
+        <Form.Item name="appName" label="主应用名" rules={[{required:true},{type:'string',max:5,message:'haha'}]} ><Input style={{width:160}} /></Form.Item>
         <EditableTable
           ref={tableRef}
           parentForm={form}

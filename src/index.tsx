@@ -65,11 +65,14 @@ import {
 import { FormInstance } from 'antd/lib/form';
 
 interface ETableColEditorProps {
-  type?: 'select' | 'datetime' | 'text' | 'checkbox' | 'number' | 'date' | 'time';
+  type?: 'select' | 'datetime' | 'string' | 'checkbox' | 'number' | 'date' | 'time';
   required?: boolean;
   validator?: (...arg: any[]) => void;
   options?: any[];
   format?: string;
+  max?: number;
+  min?: number;
+  regex?: RegExp;
   component?: ()=> React.ReactElement;
 }
 
@@ -248,7 +251,7 @@ const EditableHWrapper: React.FC<PropsWithChildren<any>> = ({ className, childre
 };
 
 const getFilterInput = (editor, value, onChange, onSearch) => {
-  const { type = 'text', options = [], format } = editor;
+  const { type = 'string', options = [], format } = editor;
   switch (type) {
     case 'number':
       return <InputNumber value={value}
@@ -283,7 +286,7 @@ const getFilterInput = (editor, value, onChange, onSearch) => {
     case 'checkbox':
       return <Checkbox checked={value}
                        onChange={(e) => onChange(e.target.checked)}/>;
-    case 'text':
+    case 'string':
       return <Input value={value}
                     onChange={(e) => onChange(e.target.value.trim())}
                     onKeyPress={(e) => e.nativeEvent.key === 'Enter' ? onSearch({ currentPage: 1 }) : null}/>;
@@ -358,19 +361,32 @@ interface EditableCellProps {
   index?: number;
 }
 
-const EditableCell: React.FC<EditableCellProps> = ({ editor = { type: 'text' }, editing, dataIndex, title, record, index, children, ...restProps }) => {
+const EditableCell: React.FC<EditableCellProps> = ({ editor = { type: 'string' }, editing, dataIndex, title, record, index, children, ...restProps }) => {
   const rules: any[] = [];
-  if (editor.required) {
+  const { type = 'string',required, validator , min, max, regex, component } = editor;
+  if (required) {
     rules.push({ required: editor.required, message: `${title}必填.` });
   }
-  if (editor.validator) {
+  if (validator) {
     rules.push({ validator: (rule, value, callback) => editor.validator!(rule, value, callback, record) });
+  }
+  if(type === 'string' && max){
+    rules.push({ type: 'string', max, message: '字段超出长度' });
+  }
+  if(type === 'number' && max){
+    rules.push({ type: 'number', max,  message: '超出最大值' });
+  }
+  if(type === 'number' && min){
+    rules.push({ type: 'number', min,  message: '超出最小值' });
+  }
+  if(type === 'string' && regex){
+    rules.push({ type: 'string', pattern: regex, message: '内容不符合要求' });
   }
   return (
     <td {...restProps}>
       {editing ? (
-        editor.component ?
-          editor.component() :
+        component ?
+          component() :
           <Form.Item style={{ margin: '-12px -4px' }}
                      rules={rules}
                      name={dataIndex}
@@ -411,7 +427,7 @@ const EditableCell: React.FC<EditableCellProps> = ({ editor = { type: 'text' }, 
 };
 
 const getInput = (editor: ETableColEditorProps) => {
-  const { type = 'text', options = [], format, } = editor;
+  const { type = 'string', options = [], format, } = editor;
   switch (type) {
     case 'number':
       return <InputNumber/>;
@@ -433,7 +449,7 @@ const getInput = (editor: ETableColEditorProps) => {
       return <TimePicker format={format ? format : timeFormat}/>;
     case 'checkbox':
       return <Checkbox/>;
-    case 'text':
+    case 'string':
       return <Input/>;
     default:
       return <Input/>;
