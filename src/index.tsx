@@ -395,16 +395,23 @@ const EditableCell: React.FC<EditableCellProps> = ({ editor = { type: 'string' }
                          if(value.isValid()){
                            return { value };
                          }else{
-                           return moment();
+                           return { value: undefined};
                          }
                        }else if(editor.type === 'datetime' || editor.type === 'date' || editor.type === 'time'){
-                         if(!value)
-                           return moment();
-                         return {value: moment(value)}
+                         if(!value || value === '')
+                           return { value: undefined };
+                         else if(editor.type === 'datetime')
+                           return { value: moment(value,"YYYY-MM-DD HH:mm:ss") };
+                         else if(editor.type === 'date')
+                           return { value: moment(value,"YYYY-MM-DD") };
+                         else if(editor.type === 'time')
+                           return { value: moment(value,"HH:mm") };
                        }
-                       return {value}
+                       return { value }
                      }}
                      getValueFromEvent={(e)=>{
+                       if((editor.type === 'datetime' || editor.type === 'date' || editor.type === 'time') && !e)
+                         return '';
                        if(editor.type === 'datetime')
                          return moment(e).format("YYYY-MM-DD HH:mm:ss");
                        else if(editor.type === 'date')
