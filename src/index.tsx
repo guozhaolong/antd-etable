@@ -899,6 +899,7 @@ const EditableTable: React.FC<ETableProps> = ({
                 <Pagination
                   showSizeChanger
                   showQuickJumper
+                  disabled={loading}
                   size="small"
                   pageSizeOptions={['5', '10', '20', '30', '40']}
                   showTotal={(t, _range) => {
@@ -991,6 +992,80 @@ const EditableTable: React.FC<ETableProps> = ({
     scroll={scroll}
     expandable={expandable}
     {...rest} />;
+
+  const header = <div className={styles.antETableHeader} >
+    <div className={styles.antETableTitleContainer}>
+      <div className={styles.antETableTitle}>{title}</div>
+      {title && <Divider type="vertical" style={{ marginTop: 7 }}/>}
+      <div className={styles.antETableToolbar}>
+        {showToolbar &&
+        <>
+          <Tooltip title={filterVisible ? i18n['filter.collapse'] : i18n['filter.expand']}>
+            <>
+              {filterVisible && <FilterFilled onClick={() => setFilterVisible(!filterVisible)}
+                                              style={{ cursor: loading ? 'not-allow' : 'pointer', color: loading ? '#ddd' : '#666', }} />}
+              {!filterVisible && <FilterOutlined onClick={() => setFilterVisible(!filterVisible)}
+                                                 style={{ cursor: loading ? 'not-allow' : 'pointer', color: loading ? '#ddd' : '#666', }} />}
+            </>
+          </Tooltip>
+          <Tooltip title={i18n['filter.clear']}>
+            <RestFilled style={{ cursor: _.isEmpty(filter) || loading ? 'not-allow' : 'pointer', color: _.isEmpty(filter) || loading ? '#ddd' : '#666', }} onClick={handleFilterClear}/>
+          </Tooltip>
+          <Tooltip title={i18n['search']}>
+            <SearchOutlined style={{ cursor: loading ? 'not-allow' : 'pointer', color: loading ? '#ddd' : '#666', }}
+                            onClick={() => {
+                              if(!loading) {
+                                handleTableChange({ currentPage: 1 })
+                              }}}/>
+          </Tooltip>
+          <Tooltip title={i18n['columns']}>
+            <Popover
+              placement="bottom"
+              content={columnsFilter}
+              trigger="click"
+              visible={columnsPopVisible}
+              onVisibleChange={(visible) => setColumnsPopVisible(visible)}
+            >
+              <UnorderedListOutlined style={{ cursor: loading ? 'not-allow' : 'pointer', color: loading ? '#ddd' : '#666', }}/>
+            </Popover>
+          </Tooltip>
+        </>
+        }
+        {showTopPager && (
+          <>
+            {showToolbar && <Divider type="vertical" style={{ marginTop: 7 }}/>}
+            <Pagination
+              simple
+              className={loading ? styles.antETableTopPagerDisabled : null}
+              disabled={loading}
+              defaultCurrent={1}
+              total={total}
+              current={pager.currentPage}
+              pageSize={pager.pageSize}
+              onChange={(current, size) => {
+                if(!loading) {
+                  handleTableChange({ currentPage: current, pageSize: size })
+                }
+              }}
+              style={{ display: 'inline-block', marginRight: 4 }}
+            />
+            <div>{`${i18n['total.prefix']} ${total} ${i18n['total.suffix']}`}</div>
+          </>
+        )}
+      </div>
+    </div>
+    <div className={styles.antETableToolbarRight}>
+      <Tooltip title={i18n['download']}>
+        <DownloadOutlined onClick={() => handleDownload()}/>
+      </Tooltip>
+      <Tooltip title={i18n[collapsed ? 'expand' : 'collapse']}>
+        <>
+          {collapsed && <ColumnHeightOutlined onClick={() => setCollapsed(!collapsed)}/>}
+          {!collapsed && <VerticalAlignMiddleOutlined onClick={() => setCollapsed(!collapsed)}/>}
+        </>
+      </Tooltip>
+    </div>
+  </div>;
   return (
     <EditableContext.Provider value={{
       rowKey,
@@ -1007,72 +1082,7 @@ const EditableTable: React.FC<ETableProps> = ({
     }}>
       <div className={styles.antETable} style={style}>
         {
-          showHeader &&
-          <div className={styles.antETableHeader}>
-            <div className={styles.antETableTitleContainer}>
-              <div className={styles.antETableTitle}>{title}</div>
-              {title && <Divider type="vertical" style={{ marginTop: 7 }}/>}
-              <div className={styles.antETableToolbar}>
-                {showToolbar &&
-                <>
-                  <Tooltip title={filterVisible ? i18n['filter.collapse'] : i18n['filter.expand']}>
-                    <>
-                      {filterVisible && <FilterFilled onClick={() => setFilterVisible(!filterVisible)}/>}
-                      {!filterVisible && <FilterOutlined onClick={() => setFilterVisible(!filterVisible)}/>}
-                    </>
-                  </Tooltip>
-                  <Tooltip title={i18n['filter.clear']}>
-                    <RestFilled style={{
-                      cursor: _.isEmpty(filter) ? 'default' : 'pointer',
-                      color: _.isEmpty(filter) ? '#ddd' : '#666',
-                    }}
-                                onClick={handleFilterClear}/>
-                  </Tooltip>
-                  <Tooltip title={i18n['search']}>
-                    <SearchOutlined onClick={() => handleTableChange({ currentPage: 1 })}/>
-                  </Tooltip>
-                  <Tooltip title={i18n['columns']}>
-                    <Popover
-                      placement="bottom"
-                      content={columnsFilter}
-                      trigger="click"
-                      visible={columnsPopVisible}
-                      onVisibleChange={(visible) => setColumnsPopVisible(visible)}
-                    >
-                      <UnorderedListOutlined/>
-                    </Popover>
-                  </Tooltip>
-                </>
-                }
-                {showTopPager && (
-                  <>
-                    {showToolbar && <Divider type="vertical" style={{ marginTop: 7 }}/>}
-                    <Pagination
-                      simple
-                      defaultCurrent={1}
-                      total={total}
-                      current={pager.currentPage}
-                      pageSize={pager.pageSize}
-                      onChange={(current, size) => handleTableChange({ currentPage: current, pageSize: size })}
-                      style={{ display: 'inline-block', marginRight: 4 }}
-                    />
-                    <div>{`${i18n['total.prefix']} ${total} ${i18n['total.suffix']}`}</div>
-                  </>
-                )}
-              </div>
-            </div>
-            <div className={styles.antETableToolbarRight}>
-              <Tooltip title={i18n['download']}>
-                <DownloadOutlined onClick={() => handleDownload()}/>
-              </Tooltip>
-              <Tooltip title={i18n[collapsed ? 'expand' : 'collapse']}>
-                <>
-                  {collapsed && <ColumnHeightOutlined onClick={() => setCollapsed(!collapsed)}/>}
-                  {!collapsed && <VerticalAlignMiddleOutlined onClick={() => setCollapsed(!collapsed)}/>}
-                </>
-              </Tooltip>
-            </div>
-          </div>
+          showHeader && header
         }
         {
           !collapsed &&
