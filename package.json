@@ -24,7 +24,7 @@
   "dependencies": {
     "@ant-design/icons": "^4.0.3",
     "react-resizable": "^1.10.1",
-    "antd": "4.3.5"
+    "antd": "4.5.2"
   },
   "peerDependencies": {
     "react": "^16.12.0",
