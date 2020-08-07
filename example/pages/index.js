@@ -220,6 +220,15 @@ export default function() {
       }
     }));
   };
+  const handleAdd = ()=> {
+    return new Promise((resolve, reject)=>{
+      setTimeout(()=>{
+        resolve()
+      },500);
+    }).then(()=>{
+      return { id: _.uniqueId('newPromiseId_') };
+    })
+  };
   return (
     <div className={styles.root} >
       <div style={{textAlign:'right',marginBottom:16}}>
@@ -264,7 +273,7 @@ export default function() {
           showFooter={showFooter}
           onFetch={(pager,filter,sorter)=>fetch(pager,filter,sorter)}
           onChangedDataUpdate={(d)=>{console.log(d);setChangedData(d)}}
-          onAdd={()=>{console.log('onAdd');return {id:'test'+(i++)}}}
+          onAdd={handleAdd}
           onSelectRow={(rows)=>{console.log('onSelectRow',rows);setCurrentRow(rows[0])}}
           expandedFirstRow={false}
           onExpandedRow={handleExpandRow}

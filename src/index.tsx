@@ -497,7 +497,7 @@ export interface ETableProps {
   canRemove?: (...args: any[]) => boolean;
   beforeEdit?: (...args: any[]) => any;
   afterEdit?: (...args: any[]) => any;
-  onAdd?: (...args: any[]) => any;
+  onAdd?: (...args: any[]) => Promise<any>;
   onFetch?: (...args: any[]) => void;
   onChangedDataUpdate?: (...args: any[]) => void;
   onDownload?: (...args: any[]) => any;
@@ -541,7 +541,7 @@ const EditableTable: React.FC<ETableProps> = ({
                                                 canRemove = () => true,
                                                 beforeEdit = () => ({}),
                                                 afterEdit = () => ({}),
-                                                onAdd = () => ({}),
+                                                onAdd = () => Promise.resolve({}),
                                                 onFetch = () => {},
                                                 onChangedDataUpdate = () => {},
                                                 onDownload,
@@ -646,9 +646,9 @@ const EditableTable: React.FC<ETableProps> = ({
     },
   });
 
-  const handleAdd =  () => {
+  const handleAdd = async () => {
     if(editingKey === "" || editOnSelected) {
-      let newObj = onAdd();
+      let newObj = await onAdd();
       let key = _.uniqueId(newRowKeyPrefix);
       if (newObj) {
         newObj.isNew = true;
