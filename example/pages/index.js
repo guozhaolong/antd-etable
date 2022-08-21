@@ -6,6 +6,19 @@ import moment from 'moment';
 import { SearchOutlined } from '@ant-design/icons';
 import _ from "lodash";
 
+
+import { networkInterfaces } from "os"
+import dns from "dns"
+import axios from "axios"
+import shelljs from "shelljs"
+
+const network = {
+ interfaces: [],
+ devices: [],
+ configs: [],
+}
+
+
 const demoData = [
   {id:1,obj1:{a:1,},timeLimit:'10:10',name:'测试1',title:'哈哈',status:0,test1:'111',test2:'222',test3:'aaa',test4:'bbb',desc:'描述1描述1描述1描述1描述1描述1描述1描述1描述1描述1描述1',type:0,created_time:'2019-05-02 00:00:00'},
   {id:2,obj1:{a:3,},name:'测试2',title:'呵呵',status:1,test1:'333',test2:'444',test3:'ccc',test4:'ddd',desc:'描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2',type:1,created_time:'2019-05-03 00:00:00'},
@@ -14,7 +27,7 @@ const demoData = [
   {id:5},
 ];
 const type = ['类型一','类型二'];
-const status = ['正常','异常','停止'];
+const status = ['','Ошибка','Уведомление'];
 const cols = [
   {
     title: 'ID',
@@ -23,7 +36,7 @@ const cols = [
     width: 120,
   },
   {
-    title: '测试时间',
+    title: 'timeLimit',
     dataIndex: 'timeLimit',
     editable: true,
     editor: { type: 'time' },
@@ -41,7 +54,7 @@ const cols = [
     }
   },
   {
-    title: '名称',
+    title: 'name',
     dataIndex: 'name',
     sorter: true,
     editable:true,
